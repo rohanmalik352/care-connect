@@ -1,49 +1,56 @@
 <%- include('../partials/head') %>
 <%- include('../partials/navbar') %>
-<div class="container py-4">
-  <%- include('../partials/flash') %>
-  <h3 class="fw-bold mb-4"><i class="fas fa-file-medical me-2 text-teal"></i>My Medical Records</h3>
-
-  <% if (records.length === 0) { %>
-    <div class="text-center py-5 text-muted">
-      <i class="fas fa-folder-open fa-4x mb-3 opacity-25"></i>
-      <p class="fs-5">No medical records found.</p>
-      <p class="small">Your records will appear here after doctor consultations.</p>
+<div class="dashboard-wrapper">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><i class="fas fa-heartbeat green me-2"></i>Care<span class="green">Connect</span></div>
+    <a href="/patient/dashboard" class="sidebar-link"><span class="sidebar-icon"><i class="fas fa-th-large"></i></span><span>Dashboard</span></a>
+    <a href="/patient/records" class="sidebar-link active"><span class="sidebar-icon"><i class="fas fa-file-medical"></i></span><span>Medical Records</span></a>
+    <a href="#" class="sidebar-link"><span class="sidebar-icon"><i class="fas fa-pills"></i></span><span>Medicines</span></a>
+    <a href="#" class="sidebar-link"><span class="sidebar-icon"><i class="fas fa-chart-line"></i></span><span>Health Tracker</span></a>
+    <a href="/patient/profile" class="sidebar-link"><span class="sidebar-icon"><i class="fas fa-user"></i></span><span>My Profile</span></a>
+    <a href="/auth/logout" class="sidebar-link"><span class="sidebar-icon"><i class="fas fa-sign-out-alt"></i></span><span>Logout</span></a>
+  </aside>
+  <main class="dashboard-content">
+    <%- include('../partials/flash') %>
+    <div class="dash-topbar">
+      <div>
+        <h4 class="fw-800 mb-0">My Medical Records</h4>
+        <p class="text-muted small mb-0"><%= records.length %> records found</p>
+      </div>
+      <a href="/patient/dashboard" class="btn btn-outline-purple btn-sm px-3"><i class="fas fa-arrow-left me-1"></i>Back</a>
     </div>
-  <% } else { %>
-    <div class="row g-3">
-      <% records.forEach(r => { %>
-        <div class="col-12">
-          <div class="card border-0 shadow-sm record-card">
-            <div class="card-body d-flex flex-wrap align-items-center gap-3">
-              <div class="record-date text-center">
-                <div class="fw-bold fs-5"><%= new Date(r.visitDate).getDate() %></div>
-                <div class="text-muted small"><%= new Date(r.visitDate).toLocaleString('default', {month:'short'}) %> <%= new Date(r.visitDate).getFullYear() %></div>
+    <% if (records.length === 0) { %>
+      <div class="cc-card p-5 text-center">
+        <i class="fas fa-folder-open fa-4x mb-3" style="color:var(--purple-mid);opacity:0.3"></i>
+        <p class="fw-600 mb-1">No medical records found</p>
+        <p class="text-muted small">Records will appear here after doctor consultations.</p>
+      </div>
+    <% } else { %>
+      <div class="d-flex flex-column gap-3">
+        <% records.forEach(r => { %>
+          <div class="record-card-new <%= r.visitType === 'Emergency' ? 'emergency' : r.visitType === 'IPD' ? 'ipd' : '' %>">
+            <div class="d-flex align-items-center gap-4 flex-wrap">
+              <div class="text-center" style="min-width:52px;background:rgba(124,58,237,0.07);border-radius:12px;padding:10px">
+                <div class="fw-800 fs-5" style="color:var(--purple)"><%= new Date(r.visitDate).getDate() %></div>
+                <div class="text-muted" style="font-size:0.7rem"><%= new Date(r.visitDate).toLocaleString('default',{month:'short'}) %> <%= new Date(r.visitDate).getFullYear() %></div>
               </div>
               <div class="flex-grow-1">
-                <div class="d-flex align-items-center gap-2 mb-1">
-                  <span class="badge bg-teal"><%= r.visitType %></span>
-                  <% if (r.isEmergency) { %><span class="badge bg-danger">Emergency</span><% } %>
+                <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                  <span class="vt-badge vt-<%= r.visitType.toLowerCase().replace(' ','') %>"><%= r.visitType %></span>
+                  <% if(r.isEmergency) { %><span class="vt-badge vt-emergency">🚨 Emergency</span><% } %>
                 </div>
-                <h6 class="fw-bold mb-1"><%= r.chiefComplaint || 'Consultation' %></h6>
-                <p class="text-muted small mb-0">
-                  Dr. <%= r.doctor?.user?.name || 'Unknown' %>
-                  <% if (r.hospital) { %> &bull; <%= r.hospital %><% } %>
-                </p>
-                <% if (r.diagnosis && r.diagnosis.length > 0) { %>
-                  <div class="mt-1">
-                    <% r.diagnosis.forEach(d => { %><span class="badge bg-light text-dark border me-1"><%= d %></span><% }) %>
-                  </div>
+                <div class="fw-700 mb-1"><%= r.chiefComplaint || 'Consultation' %></div>
+                <div class="text-muted small mb-1">Dr. <%= r.doctor?.user?.name || 'Unknown' %><% if(r.hospital) { %> · <%= r.hospital %><% } %></div>
+                <% if(r.diagnosis && r.diagnosis.length > 0) { %>
+                  <% r.diagnosis.forEach(d => { %><span class="badge-purple me-1"><%= d %></span><% }) %>
                 <% } %>
               </div>
-              <a href="/patient/records/<%= r._id %>" class="btn btn-outline-teal btn-sm">
-                <i class="fas fa-eye me-1"></i>View
-              </a>
+              <a href="/patient/records/<%= r._id %>" class="btn btn-outline-green btn-sm px-4"><i class="fas fa-eye me-1"></i>View</a>
             </div>
           </div>
-        </div>
-      <% }) %>
-    </div>
-  <% } %>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
 </div>
 <%- include('../partials/footer') %>

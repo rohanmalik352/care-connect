@@ -1,125 +1,242 @@
 <%- include('../partials/head') %>
 <%- include('../partials/navbar') %>
-<div class="container py-4">
-  <%- include('../partials/flash') %>
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h2 class="fw-bold mb-1">Welcome, <%= user.name %></h2>
-      <p class="text-muted mb-0">Your health, in one place.</p>
-    </div>
-    <% if (patient && patient.abhaId) { %>
-      <span class="badge bg-teal fs-6 px-3 py-2"><i class="fas fa-id-card me-2"></i>ABHA: <%= patient.abhaId %></span>
-    <% } %>
-  </div>
+<div class="dashboard-wrapper">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo"><i class="fas fa-heartbeat green me-2"></i>Care<span class="green">Connect</span></div>
+    <div class="sidebar-section-label">My Health</div>
+    <a href="/patient/dashboard" class="sidebar-link active">
+      <span class="sidebar-icon"><i class="fas fa-th-large"></i></span><span>Dashboard</span>
+    </a>
+    <a href="/patient/records" class="sidebar-link">
+      <span class="sidebar-icon"><i class="fas fa-file-medical"></i></span><span>Medical Records</span>
+    </a>
+    <div class="sidebar-section-label">Tools</div>
+    <a href="#" class="sidebar-link">
+      <span class="sidebar-icon"><i class="fas fa-pills"></i></span><span>Medicines</span>
+    </a>
+    <a href="#" class="sidebar-link">
+      <span class="sidebar-icon"><i class="fas fa-chart-line"></i></span><span>Health Tracker</span>
+    </a>
+    <a href="#" class="sidebar-link">
+      <span class="sidebar-icon"><i class="fas fa-hospital"></i></span><span>Nearby Hospitals</span>
+    </a>
+    <div class="sidebar-section-label">Account</div>
+    <a href="/patient/profile" class="sidebar-link">
+      <span class="sidebar-icon"><i class="fas fa-user"></i></span><span>My Profile</span>
+    </a>
+    <a href="/auth/logout" class="sidebar-link">
+      <span class="sidebar-icon"><i class="fas fa-sign-out-alt"></i></span><span>Logout</span>
+    </a>
+  </aside>
 
-  <!-- Quick Stats -->
-  <div class="row g-3 mb-4">
-    <div class="col-6 col-md-3">
-      <div class="stat-card card border-0 shadow-sm text-center p-3">
-        <div class="stat-icon teal mb-2"><i class="fas fa-file-medical"></i></div>
-        <div class="fw-bold fs-4"><%= records.length %></div>
-        <div class="text-muted small">Records</div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="stat-card card border-0 shadow-sm text-center p-3">
-        <div class="stat-icon red mb-2"><i class="fas fa-tint"></i></div>
-        <div class="fw-bold fs-4"><%= (patient && patient.bloodGroup) || '—' %></div>
-        <div class="text-muted small">Blood Group</div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="stat-card card border-0 shadow-sm text-center p-3">
-        <div class="stat-icon blue mb-2"><i class="fas fa-allergies"></i></div>
-        <div class="fw-bold fs-4"><%= (patient && patient.allergies) ? patient.allergies.length : 0 %></div>
-        <div class="text-muted small">Allergies</div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="stat-card card border-0 shadow-sm text-center p-3">
-        <div class="stat-icon green mb-2"><i class="fas fa-shield-alt"></i></div>
-        <div class="fw-bold fs-4">Active</div>
-        <div class="text-muted small">Account Status</div>
-      </div>
-    </div>
-  </div>
+  <main class="dashboard-content">
+    <%- include('../partials/flash') %>
 
-  <div class="row g-4">
-    <!-- Recent Records -->
-    <div class="col-lg-8">
-      <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-          <h5 class="fw-bold mb-0"><i class="fas fa-history me-2 text-teal"></i>Recent Visits</h5>
-          <a href="/patient/records" class="btn btn-sm btn-outline-teal">View All</a>
+    <!-- Topbar -->
+    <div class="dash-topbar">
+      <div>
+        <h4 class="fw-800 mb-0">Hello, <%= user.name.split(' ')[0] %> 👋</h4>
+        <p class="text-muted small mb-0">Your health dashboard · <% if(patient && patient.abhaId){ %><span style="color:var(--green-dark)">ABHA: <%= patient.abhaId %></span><% } else { %>Complete your profile<% } %></p>
+      </div>
+      <div class="topbar-right">
+        <button class="sos-btn btn-sm" style="padding:8px 20px;font-size:0.85rem">
+          <i class="fas fa-plus-circle me-2"></i>SOS Emergency
+        </button>
+        <a href="/patient/profile" class="user-chip">
+          <div class="avatar av-green"><%= user.name.charAt(0).toUpperCase() %></div>
+          <span class="fw-600 small d-none d-md-block"><%= user.name.split(' ')[0] %></span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-xl-3">
+        <div class="stat-card-dash">
+          <div class="stat-icon-dash si-green"><i class="fas fa-file-medical"></i></div>
+          <div><div class="stat-val"><%= records.length %></div><div class="stat-lbl">Medical Records</div></div>
         </div>
-        <div class="card-body p-0">
-          <% if (records.length === 0) { %>
-            <div class="text-center py-5 text-muted">
-              <i class="fas fa-file-medical fa-3x mb-3 opacity-25"></i>
-              <p>No medical records yet.</p>
-            </div>
-          <% } else { %>
-            <div class="table-responsive">
-              <table class="table table-hover mb-0">
-                <thead class="table-light">
-                  <tr>
-                    <th>Date</th><th>Doctor</th><th>Type</th><th>Diagnosis</th><th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% records.forEach(r => { %>
-                    <tr>
-                      <td><%= new Date(r.visitDate).toLocaleDateString('en-IN') %></td>
-                      <td><%= r.doctor?.user?.name || 'Unknown' %></td>
-                      <td><span class="badge badge-visit-type"><%= r.visitType %></span></td>
-                      <td><%= r.diagnosis?.slice(0,2).join(', ') || r.chiefComplaint || '—' %></td>
-                      <td><a href="/patient/records/<%= r._id %>" class="btn btn-sm btn-outline-secondary">View</a></td>
-                    </tr>
-                  <% }) %>
-                </tbody>
-              </table>
-            </div>
-          <% } %>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="stat-card-dash">
+          <div class="stat-icon-dash si-red"><i class="fas fa-tint"></i></div>
+          <div><div class="stat-val" style="font-size:1.4rem"><%= (patient && patient.bloodGroup) || '—' %></div><div class="stat-lbl">Blood Group</div></div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="stat-card-dash">
+          <div class="stat-icon-dash si-purple"><i class="fas fa-allergies"></i></div>
+          <div><div class="stat-val"><%= (patient && patient.allergies) ? patient.allergies.length : 0 %></div><div class="stat-lbl">Allergies</div></div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="stat-card-dash">
+          <div class="stat-icon-dash si-blue"><i class="fas fa-heartbeat"></i></div>
+          <div><div class="stat-val" style="font-size:1rem;margin-top:4px;color:var(--green-dark)">Active</div><div class="stat-lbl">Health Status</div></div>
         </div>
       </div>
     </div>
 
-    <!-- Patient Info Panel -->
-    <div class="col-lg-4">
-      <div class="card border-0 shadow-sm mb-3">
-        <div class="card-header bg-teal text-white py-3">
-          <h6 class="mb-0 fw-bold"><i class="fas fa-user me-2"></i>Health Profile</h6>
-        </div>
-        <div class="card-body">
-          <% if (patient) { %>
-            <div class="info-row"><span>Blood Group</span><strong><%= patient.bloodGroup || '—' %></strong></div>
-            <div class="info-row"><span>Gender</span><strong><%= patient.gender || '—' %></strong></div>
-            <div class="info-row"><span>DOB</span><strong><%= patient.dob ? new Date(patient.dob).toLocaleDateString('en-IN') : '—' %></strong></div>
-            <% if (patient.allergies && patient.allergies.length > 0) { %>
-              <div class="mt-3">
-                <small class="text-muted">Allergies</small>
-                <div class="mt-1">
-                  <% patient.allergies.forEach(a => { %><span class="badge bg-warning text-dark me-1"><%= a %></span><% }) %>
-                </div>
+    <div class="row g-4">
+      <!-- Records + Upload -->
+      <div class="col-lg-8">
+        <!-- Medical Records -->
+        <div class="cc-card mb-4">
+          <div class="cc-card-header">
+            <h6><i class="fas fa-history me-2" style="color:var(--green-dark)"></i>Medical History Timeline</h6>
+            <a href="/patient/records" class="btn btn-outline-green btn-sm px-3">View All</a>
+          </div>
+          <div class="p-3">
+            <% if (records.length === 0) { %>
+              <div class="text-center py-4 text-muted">
+                <i class="fas fa-file-medical fa-3x mb-3 opacity-25"></i>
+                <p class="small">No records yet. Visit a doctor to add records.</p>
+              </div>
+            <% } else { %>
+              <div class="d-flex flex-column gap-2">
+                <% records.forEach(r => { %>
+                  <div class="record-card-new <%= r.visitType === 'Emergency' ? 'emergency' : r.visitType === 'IPD' ? 'ipd' : '' %>">
+                    <div class="d-flex align-items-start justify-content-between gap-3">
+                      <div class="flex-grow-1">
+                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                          <span class="vt-badge vt-<%= r.visitType.toLowerCase().replace(' ','') %>"><%= r.visitType %></span>
+                          <% if(r.isEmergency) { %><span class="vt-badge vt-emergency">Emergency</span><% } %>
+                          <span class="text-muted small"><i class="fas fa-user-md me-1"></i>Dr. <%= r.doctor?.user?.name || 'Unknown' %></span>
+                        </div>
+                        <div class="fw-700 small mb-1"><%= r.chiefComplaint || 'Consultation' %></div>
+                        <% if(r.diagnosis && r.diagnosis.length > 0) { %>
+                          <% r.diagnosis.forEach(d => { %><span class="badge-purple me-1" style="font-size:0.7rem"><%= d %></span><% }) %>
+                        <% } %>
+                      </div>
+                      <div class="text-end flex-shrink-0">
+                        <div class="text-muted small"><%= new Date(r.visitDate).toLocaleDateString('en-IN') %></div>
+                        <a href="/patient/records/<%= r._id %>" class="btn btn-sm btn-outline-green mt-1 px-2" style="font-size:0.75rem">View</a>
+                      </div>
+                    </div>
+                  </div>
+                <% }) %>
               </div>
             <% } %>
-            <% if (patient.chronicConditions && patient.chronicConditions.length > 0) { %>
-              <div class="mt-3">
-                <small class="text-muted">Chronic Conditions</small>
-                <div class="mt-1">
-                  <% patient.chronicConditions.forEach(c => { %><span class="badge bg-danger me-1"><%= c %></span><% }) %>
+          </div>
+        </div>
+
+        <!-- Upload Medical Records -->
+        <div class="cc-card">
+          <div class="cc-card-header">
+            <h6><i class="fas fa-cloud-upload-alt me-2" style="color:var(--purple)"></i>Upload Medical Records</h6>
+          </div>
+          <div class="p-4">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <button class="btn btn-purple w-100" onclick="alert('File upload coming soon!')">
+                  <i class="fas fa-prescription me-2"></i>Upload Prescriptions
+                </button>
+              </div>
+              <div class="col-md-6">
+                <button class="btn btn-green w-100" onclick="alert('File upload coming soon!')">
+                  <i class="fas fa-flask me-2"></i>Upload Lab Reports
+                </button>
+              </div>
+              <div class="col-12">
+                <div class="upload-zone" onclick="alert('Drag & drop upload coming soon!')">
+                  <i class="fas fa-cloud-upload-alt d-block mb-2" style="font-size:2rem;color:var(--purple-mid)"></i>
+                  <div class="fw-600 small">Drag & drop files here</div>
+                  <div class="text-muted" style="font-size:0.78rem">PDF, JPG, PNG — Scans, reports, X-rays</div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="col-lg-4">
+        <!-- Health Profile -->
+        <div class="cc-card mb-4">
+          <div class="cc-card-header" style="background:linear-gradient(135deg,rgba(46,204,113,0.1),rgba(124,58,237,0.1))">
+            <h6><i class="fas fa-user me-2" style="color:var(--green-dark)"></i>Health Profile</h6>
+            <a href="/patient/profile" class="btn btn-green btn-sm px-3">Edit</a>
+          </div>
+          <div class="p-3">
+            <% if (patient) { %>
+              <div class="info-row"><span class="text-muted small">Blood Group</span><span class="badge-red fw-700"><%= patient.bloodGroup || '—' %></span></div>
+              <div class="info-row"><span class="text-muted small">Gender</span><strong class="small"><%= patient.gender || '—' %></strong></div>
+              <div class="info-row"><span class="text-muted small">Date of Birth</span><strong class="small"><%= patient.dob ? new Date(patient.dob).toLocaleDateString('en-IN') : '—' %></strong></div>
+              <div class="info-row"><span class="text-muted small">Phone</span><strong class="small"><%= patient.phone || '—' %></strong></div>
+              <% if (patient.allergies && patient.allergies.length > 0) { %>
+                <div class="mt-3">
+                  <div class="text-muted small mb-1">⚠️ Allergies</div>
+                  <% patient.allergies.forEach(a => { %><span class="badge-purple me-1 mb-1 d-inline-block"><%= a %></span><% }) %>
+                </div>
+              <% } %>
+              <% if (patient.chronicConditions && patient.chronicConditions.length > 0) { %>
+                <div class="mt-3">
+                  <div class="text-muted small mb-1">🩺 Chronic Conditions</div>
+                  <% patient.chronicConditions.forEach(c => { %><span style="background:#fee2e2;color:#dc2626;border-radius:8px;padding:3px 10px;font-size:0.72rem;font-weight:700;margin-right:4px;display:inline-block"><%= c %></span><% }) %>
+                </div>
+              <% } %>
+            <% } else { %>
+              <p class="text-muted small">Complete your profile for better care.</p>
             <% } %>
-          <% } else { %>
-            <p class="text-muted small mb-2">Complete your health profile for better care.</p>
-          <% } %>
-          <a href="/patient/profile" class="btn btn-outline-teal btn-sm w-100 mt-3">
-            <i class="fas fa-edit me-1"></i>Update Profile
-          </a>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="cc-card mb-4">
+          <div class="cc-card-header">
+            <h6><i class="fas fa-bell me-2" style="color:#f59e0b"></i>Notifications & Alerts</h6>
+          </div>
+          <div class="p-3">
+            <div class="notif-item">
+              <div class="notif-icon ni-urgent"><i class="fas fa-exclamation-triangle"></i></div>
+              <div><div class="fw-600 small">Urgent: Lab Results Ready</div><div class="text-muted" style="font-size:0.75rem">View your blood report</div></div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-icon ni-green"><i class="fas fa-pills"></i></div>
+              <div><div class="fw-600 small">Medicine Reminder</div><div class="text-muted" style="font-size:0.75rem">Take Amlodipine 5mg</div></div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-icon ni-purple"><i class="fas fa-calendar"></i></div>
+              <div><div class="fw-600 small">Appointment Tomorrow</div><div class="text-muted" style="font-size:0.75rem">10:00 AM with Dr. Malik</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Health Tracker -->
+        <div class="cc-card">
+          <div class="cc-card-header">
+            <h6><i class="fas fa-chart-line me-2" style="color:var(--purple)"></i>Health Tracker</h6>
+          </div>
+          <div class="p-3">
+            <div class="tracker-metric mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="small fw-600"><i class="fas fa-heartbeat me-1" style="color:#ef4444"></i>Heart Rate (BPM)</span>
+                <span class="fw-800" style="color:#ef4444">72</span>
+              </div>
+              <div class="tracker-bar"><div class="tb-red" style="width:72%"></div></div>
+              <div class="text-muted" style="font-size:0.72rem">Normal range: 60–100 BPM</div>
+            </div>
+            <div class="tracker-metric mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="small fw-600"><i class="fas fa-tint me-1" style="color:var(--purple)"></i>Blood Sugar (mg/dL)</span>
+                <span class="fw-800" style="color:var(--purple)">98</span>
+              </div>
+              <div class="tracker-bar"><div class="tb-purple" style="width:50%"></div></div>
+              <div class="text-muted" style="font-size:0.72rem">Fasting: 70–100 mg/dL</div>
+            </div>
+            <div class="tracker-metric">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="small fw-600"><i class="fas fa-walking me-1" style="color:var(--green-dark)"></i>Steps Today</span>
+                <span class="fw-800" style="color:var(--green-dark)">6,240</span>
+              </div>
+              <div class="tracker-bar"><div class="tb-green" style="width:62%"></div></div>
+              <div class="text-muted" style="font-size:0.72rem">Goal: 10,000 steps</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </div>
 <%- include('../partials/footer') %>

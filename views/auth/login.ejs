@@ -1,29 +1,78 @@
 <%- include('../partials/head') %>
-<%- include('../partials/navbar') %>
-<div class="auth-container d-flex align-items-center justify-content-center min-vh-100 py-5">
-  <div class="auth-card card shadow-lg border-0 p-4 p-md-5" style="max-width:450px;width:100%">
-    <div class="text-center mb-4">
-      <i class="fas fa-heartbeat fa-3x text-teal mb-3"></i>
-      <h3 class="fw-bold">Welcome Back</h3>
-      <p class="text-muted">Log in to CareConnect</p>
+<div class="auth-page">
+  <div class="auth-box">
+    <div class="auth-top">
+      <div class="text-center mb-2">
+        <i class="fas fa-heartbeat fa-2x mb-2" style="color:var(--green)"></i>
+        <h4 class="fw-800 mb-0" style="letter-spacing:-0.5px">Welcome to <span style="color:var(--purple)">CareConnect</span></h4>
+        <p class="text-muted small mt-1">Sign in to your account</p>
+      </div>
+      <!-- Role Tabs -->
+      <div class="auth-tabs mt-3" id="roleTabs">
+        <button class="auth-tab-btn active-doctor" onclick="setRole('doctor',this)" id="tabDoctor">
+          <i class="fas fa-user-md me-2"></i>Doctor
+        </button>
+        <button class="auth-tab-btn" onclick="setRole('patient',this)" id="tabPatient">
+          <i class="fas fa-user me-2"></i>Patient
+        </button>
+      </div>
     </div>
-    <%- include('../partials/flash') %>
-    <form action="/auth/login" method="POST">
-      <div class="mb-3">
-        <label class="form-label fw-semibold">Email Address</label>
-        <input type="email" name="email" class="form-control form-control-lg" placeholder="doctor@hospital.com" required />
+    <div class="auth-body">
+      <%- include('../partials/flash') %>
+      <!-- Icon Row -->
+      <div class="auth-icon-row" id="iconRow">
+        <div class="auth-icon-circle aic-purple"><i class="fas fa-stethoscope"></i></div>
+        <div class="auth-icon-circle aic-green"><i class="fas fa-calendar-check"></i></div>
+        <div class="auth-icon-circle aic-purple"><i class="fas fa-clipboard-check"></i></div>
       </div>
-      <div class="mb-4">
-        <label class="form-label fw-semibold">Password</label>
-        <input type="password" name="password" class="form-control form-control-lg" placeholder="••••••••" required />
+      <form action="/auth/login" method="POST">
+        <div class="mb-3">
+          <label class="form-label fw-600 small">Email Address</label>
+          <div class="input-group">
+            <span class="input-group-text" style="border-radius:12px 0 0 12px;border-color:#e5e7eb;background:#f9f9f9"><i class="fas fa-envelope text-muted"></i></span>
+            <input type="email" name="email" class="form-control auth-input" style="border-radius:0 12px 12px 0 !important" placeholder="Enter your email" required />
+          </div>
+        </div>
+        <div class="mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label fw-600 small mb-0">Password</label>
+            <a href="#" class="text-muted small" style="font-size:0.78rem">Forgot password?</a>
+          </div>
+          <div class="input-group">
+            <span class="input-group-text" style="border-radius:12px 0 0 12px;border-color:#e5e7eb;background:#f9f9f9"><i class="fas fa-lock text-muted"></i></span>
+            <input type="password" name="password" class="form-control auth-input" style="border-radius:0 12px 12px 0 !important" placeholder="Enter password" required />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-purple w-100 btn-lg" id="loginBtn">
+          <i class="fas fa-sign-in-alt me-2"></i>Sign In as Doctor
+        </button>
+      </form>
+      <p class="text-center text-muted mt-3 small">
+        Don't have an account? <a href="/auth/register" style="color:var(--purple);font-weight:700">Register here</a>
+      </p>
+      <!-- Emergency note -->
+      <div class="text-center mt-2 p-2 rounded" style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15)">
+        <small style="color:#dc2626"><i class="fas fa-plus-circle me-1"></i>Emergency? Call <strong>112</strong></small>
       </div>
-      <button type="submit" class="btn btn-teal btn-lg w-100 mb-3">
-        <i class="fas fa-sign-in-alt me-2"></i>Login
-      </button>
-    </form>
-    <p class="text-center text-muted mt-2">
-      Don't have an account? <a href="/auth/register" class="text-teal fw-semibold">Register here</a>
-    </p>
+    </div>
   </div>
 </div>
+<script>
+function setRole(role, btn) {
+  document.querySelectorAll('.auth-tab-btn').forEach(b => b.className = 'auth-tab-btn');
+  const loginBtn = document.getElementById('loginBtn');
+  const iconRow = document.getElementById('iconRow');
+  if(role === 'doctor') {
+    btn.className = 'auth-tab-btn active-doctor';
+    loginBtn.className = 'btn btn-purple w-100 btn-lg';
+    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Sign In as Doctor';
+    iconRow.innerHTML = '<div class="auth-icon-circle aic-purple"><i class="fas fa-stethoscope"></i></div><div class="auth-icon-circle aic-green"><i class="fas fa-calendar-check"></i></div><div class="auth-icon-circle aic-purple"><i class="fas fa-clipboard-check"></i></div>';
+  } else {
+    btn.className = 'auth-tab-btn active-patient';
+    loginBtn.className = 'btn btn-green w-100 btn-lg';
+    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Sign In as Patient';
+    iconRow.innerHTML = '<div class="auth-icon-circle aic-green"><i class="fas fa-heartbeat"></i></div><div class="auth-icon-circle aic-purple"><i class="fas fa-pills"></i></div><div class="auth-icon-circle aic-green"><i class="fas fa-notes-medical"></i></div>';
+  }
+}
+</script>
 <%- include('../partials/footer') %>
