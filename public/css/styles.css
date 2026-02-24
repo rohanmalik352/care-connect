@@ -1,0 +1,362 @@
+/* ============================================================
+   CareConnect – Global Stylesheet
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap');
+
+/* ---------- CSS Variables ---------- */
+:root {
+  --green:         #3ecf8e;
+  --green-dark:    #26a96c;
+  --green-light:   #d1fae5;
+  --green-lighter: #a7f3d0;
+  --purple:        #7c5cfc;
+  --purple-dark:   #5b3fd4;
+  --purple-mid:    #9b7dfc;
+  --purple-light:  #ede9fe;
+  --purple-lighter:#c4b5fd;
+  --bg-doctor:     #f0f4f8;
+  --bg-patient:    #f2f0fb;
+  --shadow-neo-d:  5px 5px 15px #d4dce8, -3px -3px 10px #ffffff;
+  --shadow-neo-p:  5px 5px 15px #ddd8f0, -3px -3px 10px #ffffff;
+}
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display { font-family: 'Sora', sans-serif; }
+
+/* ---------- Global button reset ---------- */
+button {
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ============================================================
+   LANDING PAGE  
+   ============================================================ */
+
+body.page-index {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #c8f0dc 0%, #e8f5ff 40%, #d8d0fa 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Login cards */
+.card {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 2rem;
+  box-shadow: 0 8px 32px rgba(80, 80, 160, 0.13), 0 1.5px 8px rgba(0, 0, 0, 0.07);
+  backdrop-filter: blur(8px);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px rgba(80, 80, 160, 0.18);
+}
+
+/* Avatar circles */
+.avatar-circle-green {
+  background: radial-gradient(circle at 60% 35%, #d1fae5, #a7f3d0);
+  border-radius: 50%;
+}
+.avatar-circle-purple {
+  background: radial-gradient(circle at 60% 35%, #ede9fe, #c4b5fd);
+  border-radius: 50%;
+}
+
+/* Input fields (index) */
+.input-field {
+  background: #f8fafc;
+  border: 1.5px solid #e8ecf2;
+  border-radius: 0.875rem;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  font-size: 0.95rem;
+  color: #374151;
+  outline: none;
+  transition: border 0.2s;
+}
+.input-field:focus        { border-color: var(--green); }
+.input-field-p:focus      { border-color: var(--purple); }
+
+/* Logo icon pill */
+.logo-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--green), var(--purple));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Decorative sparkle */
+.sparkle {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  opacity: 0.4;
+  font-size: 2rem;
+  animation: spin 8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   SHARED BUTTONS
+   ============================================================ */
+
+.btn-green,
+.btn-purple {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 0.875rem;
+  padding: 0.65rem 1.3rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+  line-height: 1.4;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.btn-green {
+  background: linear-gradient(135deg, var(--green), var(--green-dark));
+  color: #fff !important;
+  box-shadow: 0 4px 18px rgba(62, 207, 142, 0.45);
+}
+.btn-green:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(62, 207, 142, 0.55);
+}
+
+.btn-purple {
+  background: linear-gradient(135deg, var(--purple-mid), var(--purple));
+  color: #fff !important;
+  box-shadow: 0 4px 18px rgba(124, 92, 252, 0.45);
+}
+.btn-purple:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(124, 92, 252, 0.55);
+}
+
+/* Full-width variant */
+.btn-green.w-full,
+.btn-purple.w-full {
+  width: 100%;
+  display: flex;
+}
+
+/* ============================================================
+   EMERGENCY SOS BUTTON  (shared across all pages)====================================== */
+
+.sos-btn {
+  background: radial-gradient(circle at 40% 35%, #ff6666, #cc0000);
+  border: none;
+  cursor: pointer;
+  animation: sosGlow 1.6s ease-in-out infinite;
+}
+
+@keyframes sosGlow {
+  0%   { box-shadow: 0 0 0 0   rgba(255, 68, 68, 0.8), 0 6px 24px rgba(200, 0, 0, 0.5); }
+  70%  { box-shadow: 0 0 0 22px rgba(255, 68, 68, 0),   0 6px 24px rgba(200, 0, 0, 0.5); }
+  100% { box-shadow: 0 0 0 0   rgba(255, 68, 68, 0),   0 6px 24px rgba(200, 0, 0, 0.5); }
+}
+
+/* ============================================================
+   NEUMORPHIC CARD 
+   ============================================================ */
+
+.neo-doc {
+  background: #fff;
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-neo-d);
+}
+.neo-pat {
+  background: #fff;
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-neo-p);
+}
+/* Alias used in templates */
+.neo { background: #fff; border-radius: 1.25rem; }
+
+body.page-doctor .neo { box-shadow: var(--shadow-neo-d); }
+body.page-patient .neo { box-shadow: var(--shadow-neo-p); }
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+
+.sidebar {
+  border-right: 1.5px solid #e5e7eb;
+}
+body.page-doctor .sidebar {
+  background: linear-gradient(180deg, #f0fdf4 0%, #ede9fe 100%);
+}
+body.page-patient .sidebar {
+  background: linear-gradient(180deg, #ede9fe 0%, #f0fdf4 100%);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  border-radius: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+body.page-doctor .nav-item:hover,
+body.page-doctor .nav-item.active {
+  background: #d1fae5;
+  color: #059669;
+  font-weight: 600;
+}
+body.page-patient .nav-item:hover,
+body.page-patient .nav-item.active {
+  background: #ede9fe;
+  color: var(--purple);
+  font-weight: 600;
+}
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+
+.badge {
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.badge-high      { background: #fef2f2; color: #dc2626; }
+.badge-med       { background: #fff7ed; color: #ea580c; }
+.badge-low       { background: #f0fdf4; color: #16a34a; }
+.badge-confirmed { background: #d1fae5; color: #059669; }
+.badge-pending   { background: #fef3c7; color: #d97706; }
+
+/* ============================================================
+   NOTIFICATION PANELS  (doctor)
+   ============================================================ */
+
+.notif-urgent { border-left: 3px solid #ef4444; background: #fef2f2; }
+.notif-alert  { border-left: 3px solid #f59e0b; background: #fffbeb; }
+.notif-info   { border-left: 3px solid var(--green); background: #f0fdf4; }
+
+/* ============================================================
+   STAT CARDS  (doctor)
+   ============================================================ */
+
+.stat-card {
+  background: white;
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  box-shadow: var(--shadow-neo-d);
+}
+
+/* ============================================================
+   CALENDAR  (doctor)
+   ============================================================ */
+
+.cal-day {
+  width: 36px;
+  height: 36px;
+  border-radius: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.cal-day:hover            { background: #d1fae5; color: #059669; }
+.cal-day.today            { background: linear-gradient(135deg, var(--green), var(--green-dark)); color: white; font-weight: 700; box-shadow: 0 2px 8px rgba(62, 207, 142, 0.4); }
+.cal-day.has-appt         { position: relative; }
+.cal-day.has-appt::after  { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: var(--purple); }
+
+/* ============================================================
+   ONLINE STATUS DOTS  
+   ============================================================ */
+
+.status-dot         { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.dot-online         { background: #22c55e; }
+.dot-busy           { background: #f59e0b; }
+.dot-offline        { background: #d1d5db; }
+
+/* ============================================================
+   SEARCH / FORM INPUTS 
+   ============================================================ */
+
+.search-input {
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.875rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.search-input:focus { border-color: var(--green); }
+
+/* ============================================================
+   MEDICINE PILLS  (patient)
+   ============================================================ */
+
+.med-pill {
+  background: linear-gradient(135deg, #faf5ff, #ede9fe);
+  border: 1.5px solid #e9d5ff;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+/* ============================================================
+   FILE UPLOAD ZONE  (patient)
+   ============================================================ */
+
+.upload-zone {
+  border: 2px dashed var(--purple-lighter);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #faf9ff;
+}
+.upload-zone:hover {
+  border-color: var(--purple);
+  background: #ede9fe;
+}
+
+/* ============================================================
+   SEVERITY BADGES  (patient – diagnoses)
+   ============================================================ */
+
+.severity-moderate { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+.severity-mild     { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+
+/* ============================================================
+   SCROLLBAR UTILITY
+   ============================================================ */
+
+.scroll-thin::-webkit-scrollbar        { width: 4px; }
+.scroll-thin::-webkit-scrollbar-track  { background: #f1f1f1; border-radius: 2px; }
+.scroll-thin::-webkit-scrollbar-thumb  { background: #ccc;    border-radius: 2px; }
+

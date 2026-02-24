@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareConnect – Welcome</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body class="page-index">
+    <div class="relative w-full max-w-5xl px-4 py-8">
+
+        <!-- Page header -->
+        <div class="text-center mb-10">
+            <div class="flex items-center justify-center gap-2 mb-3">
+                <div class="logo-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
+                    </svg>
+                </div>
+                <span class="font-display text-2xl font-bold text-gray-800">CareConnect</span>
+            </div>
+            <p class="text-gray-500 text-sm">Select your role to continue</p>
+        </div>
+
+        <!-- Two login cards -->
+        <div class="flex flex-col md:flex-row gap-8 justify-center items-stretch">
+
+            <!-- Doctor Login Card -->
+            <div class="card flex-1 max-w-sm mx-auto w-full p-8 flex flex-col items-center">
+
+                <div class="flex items-center gap-2 self-start mb-6">
+                    <div class="logo-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <h2 class="font-display text-2xl font-bold text-gray-800 mb-6">Doctor Login</h2>
+
+                <div class="avatar-circle-green w-36 h-36 flex items-center justify-center mb-8 overflow-hidden">
+                    <svg viewBox="0 0 120 120" width="140" height="140" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="60" cy="45" r="22" fill="#f5c5a3" />
+                        <ellipse cx="60" cy="47" rx="13" ry="15" fill="#f5c5a3" />
+                        <ellipse cx="60" cy="30" rx="20" ry="14" fill="#6b4226" />
+                        <circle cx="54" cy="44" r="2" fill="#5a3e2b" />
+                        <circle cx="66" cy="44" r="2" fill="#5a3e2b" />
+                        <path d="M55 52 Q60 57 65 52" stroke="#d07050" stroke-width="1.5" fill="none"
+                            stroke-linecap="round" />
+                        <path d="M35 95 Q38 70 50 65 L55 75 L60 68 L65 75 L70 65 Q82 70 85 95 Z" fill="white" />
+                        <path d="M58 65 L60 68 L62 65 L61 80 L60 82 L59 80 Z" fill="#3b82f6" />
+                        <path d="M48 72 Q44 80 46 88 Q48 94 54 93" stroke="#9ca3af" stroke-width="2" fill="none" />
+                        <circle cx="54" cy="93" r="3" fill="#9ca3af" />
+                        <path d="M72 72 Q76 80 74 88 Q72 94 66 93" stroke="#9ca3af" stroke-width="2" fill="none" />
+                    </svg>
+                </div>
+
+                <a href="/doctor" class="btn-green w-full py-3 rounded-2xl text-sm mt-2 inline-block text-center">
+                    Sign In
+                </a>
+            </div>
+
+            <!-- Patient Login Card -->
+            <div class="card flex-1 max-w-sm mx-auto w-full p-8 flex flex-col items-center">
+
+                <div class="flex items-center gap-2 self-start mb-6">
+                    <div class="logo-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <h2 class="font-display text-2xl font-bold text-gray-800 mb-6">Patient Login</h2>
+
+                <div class="avatar-circle-purple w-36 h-36 flex items-center justify-center mb-8 overflow-hidden">
+                    <svg viewBox="0 0 120 120" width="140" height="140" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="60" cy="45" r="22" fill="#f5c5a3" />
+                        <ellipse cx="60" cy="28" rx="21" ry="16" fill="#7b4f35" />
+                        <path d="M78 32 Q88 45 82 68 Q79 72 76 68 Q79 50 74 40 Z" fill="#7b4f35" />
+                        <circle cx="54" cy="44" r="2" fill="#5a3e2b" />
+                        <circle cx="66" cy="44" r="2" fill="#5a3e2b" />
+                        <path d="M55 52 Q60 57 65 52" stroke="#c06050" stroke-width="1.5" fill="none"
+                            stroke-linecap="round" />
+                        <circle cx="51" cy="49" r="4" fill="#f9a8a8" opacity="0.4" />
+                        <circle cx="69" cy="49" r="4" fill="#f9a8a8" opacity="0.4" />
+                        <path d="M38 95 Q40 68 52 64 L60 70 L68 64 Q80 68 82 95 Z" fill="#ef4444" />
+                    </svg>
+                </div>
+
+                <a href="/patient" class="btn-green w-full py-3 rounded-2xl text-sm mt-2 inline-block text-center">
+                    Sign In
+                </a>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

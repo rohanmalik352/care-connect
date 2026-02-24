@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareConnect – Doctor Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/styles.css"/>
+  <style>
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.35); backdrop-filter: blur(3px);
+      z-index: 100; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: white; border-radius: 1.5rem;
+      padding: 2rem; width: 90%; max-width: 460px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      animation: popIn .2s ease;
+    }
+    @keyframes popIn { from { transform: scale(.92); opacity:0; } to { transform:scale(1); opacity:1; } }
+
+    /* Section panels */
+    .section-panel { display: none; }
+    .section-panel.active { display: block; }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: #1f2937; color: white;
+      padding: .75rem 1.25rem; border-radius: 1rem;
+      font-size: .875rem; font-weight: 500;
+      transform: translateY(80px); opacity: 0;
+      transition: all .3s; z-index: 200;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+
+    /* Notification dropdown */
+    #notifDropdown {
+      display: none; position: absolute; right: 0; top: 3rem;
+      width: 320px; background: white; border-radius: 1.25rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15); z-index: 50;
+      overflow: hidden;
+    }
+    #notifDropdown.open { display: block; }
+
+    .tab-btn { padding: .5rem 1rem; border-radius: .75rem; font-size: .85rem; font-weight: 500; cursor: pointer; transition: all .2s; border: none; background: transparent; color: #6b7280; }
+    .tab-btn.active { background: #d1fae5; color: #059669; font-weight: 600; }
+
+    input[type="text"], input[type="date"], textarea, select {
+      font-family: 'DM Sans', sans-serif;
+      border: 1.5px solid #e5e7eb; border-radius: .875rem;
+      padding: .6rem .9rem; font-size: .875rem; outline: none;
+      transition: border .2s; width: 100%;
+    }
+    input:focus, textarea:focus, select:focus { border-color: #3ecf8e; }
+  </style>
+</head>
+<body class="page-doctor flex h-screen overflow-hidden" style="background:var(--bg-doctor)">
+
+
+
+<div class="modal-overlay" id="modalNewAppt">
+  <div class="modal-box">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="font-display font-bold text-lg text-gray-800">New Appointment</h3>
+      <button onclick="closeModal('modalNewAppt')" class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors">✕</button>
+    </div>
+    <div class="space-y-3">
+      <input type="text" placeholder="Patient Name" id="apptPatient"/>
+      <select id="apptType">
+        <option value="">Select Type</option>
+        <option>Cardiology</option><option>General</option>
+        <option>Neurology</option><option>Orthopedics</option>
+      </select>
+      <input type="date" id="apptDate"/>
+      <select id="apptTime">
+        <option value="">Select Time</option>
+        <option>09:00 AM</option><option>10:30 AM</option>
+        <option>12:00 PM</option><option>02:00 PM</option><option>03:30 PM</option>
+      </select>
+    </div>
+    <div class="flex gap-3 mt-5">
+      <button class="btn-green flex-1" onclick="submitNewAppt()">Confirm Appointment</button>
+      <button onclick="closeModal('modalNewAppt')" style="flex:1;padding:.65rem;border-radius:.875rem;border:1.5px solid #e5e7eb;background:white;cursor:pointer;font-weight:600;color:#6b7280">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Start Session Modal -->
+<div class="modal-overlay" id="modalSession">
+  <div class="modal-box">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-display font-bold text-lg text-gray-800">Start Session</h3>
+      <button onclick="closeModal('modalSession')" class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors">✕</button>
+    </div>
+    <p class="text-sm text-gray-500 mb-4">Starting session with <strong id="sessionPatientName" class="text-gray-800"></strong></p>
+    <div class="grid grid-cols-3 gap-3 mb-5">
+      <div class="text-center p-3 rounded-xl bg-green-50">
+        <div class="text-lg font-bold text-green-600" id="sessionBP">120/80</div>
+        <div class="text-xs text-gray-400 mt-0.5">Blood Pressure</div>
+      </div>
+      <div class="text-center p-3 rounded-xl bg-purple-50">
+        <div class="text-lg font-bold text-purple-600" id="sessionHR">72</div>
+        <div class="text-xs text-gray-400 mt-0.5">Heart Rate</div>
+      </div>
+      <div class="text-center p-3 rounded-xl bg-yellow-50">
+        <div class="text-lg font-bold text-yellow-600" id="sessionTemp">98.6°F</div>
+        <div class="text-xs text-gray-400 mt-0.5">Temperature</div>
+      </div>
+    </div>
+    <textarea placeholder="Session notes…" rows="3" style="resize:none;margin-bottom:.75rem"></textarea>
+    <div class="flex gap-3">
+      <button class="btn-green flex-1" onclick="endSession()">End & Save Session</button>
+      <button onclick="closeModal('modalSession')" style="flex:1;padding:.65rem;border-radius:.875rem;border:1.5px solid #e5e7eb;background:white;cursor:pointer;font-weight:600;color:#6b7280">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Message Colleague Modal -->
+<div class="modal-overlay" id="modalMessage">
+  <div class="modal-box">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-display font-bold text-lg text-gray-800">Message Colleague</h3>
+      <button onclick="closeModal('modalMessage')" class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors">✕</button>
+    </div>
+    <p class="text-sm text-gray-500 mb-4">To: <strong id="msgColleagueName" class="text-gray-800"></strong></p>
+    <textarea id="msgBody" placeholder="Type your message…" rows="4" style="resize:none;margin-bottom:.75rem"></textarea>
+    <div class="flex gap-2 mb-4">
+      <button onclick="insertTemplate('Referral request:')" class="tab-btn border border-gray-200">Referral</button>
+      <button onclick="insertTemplate('Consultation needed:')" class="tab-btn border border-gray-200">Consultation</button>
+      <button onclick="insertTemplate('Urgent: Patient alert –')" class="tab-btn border border-gray-200" style="color:#dc2626;border-color:#fca5a5">Urgent</button>
+    </div>
+    <div class="flex gap-3">
+      <button class="btn-purple flex-1" onclick="sendMessage()">Send Message</button>
+      <button onclick="closeModal('modalMessage')" style="flex:1;padding:.65rem;border-radius:.875rem;border:1.5px solid #e5e7eb;background:white;cursor:pointer;font-weight:600;color:#6b7280">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════════════════════════ -->
+<aside class="sidebar w-60 flex-shrink-0 flex flex-col p-4 overflow-y-auto scroll-thin">
+  <div class="flex items-center gap-2 mb-8 px-2">
+    <div class="logo-icon" style="width:32px;height:32px;border-radius:9px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+    </div>
+    <span class="font-display font-bold text-gray-800 text-lg">CareConnect</span>
+  </div>
+
+  <div class="mb-2 px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Main</div>
+  <nav class="space-y-1 mb-6" id="mainNav">
+    <div class="nav-item active" data-section="dashboard" onclick="switchSection(this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg> Dashboard
+    </div>
+    <div class="nav-item" data-section="schedule" onclick="switchSection(this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg> Schedule
+    </div>
+    <div class="nav-item" data-section="patients" onclick="switchSection(this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> Patients
+    </div>
+    <div class="nav-item" data-section="messages" onclick="switchSection(this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg> Messages
+      <span class="ml-auto badge badge-high" id="msgBadge">3</span>
+    </div>
+    <div class="nav-item" data-section="colleagues" onclick="switchSection(this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg> Colleagues
+    </div>
+  </nav>
+
+  <div class="mb-2 px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Analytics</div>
+  <nav class="space-y-1 mb-6">
+    <div class="nav-item" data-section="reports" onclick="switchSection(this)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z"/></svg> Reports
+    </div>
+  </nav>
+
+  <div class="mt-auto">
+    <div class="neo p-3 flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm" style="background:linear-gradient(135deg,#3ecf8e,#26a96c)">DC</div>
+      <div>
+        <div class="text-sm font-semibold text-gray-800">Dr. Chen</div>
+        <div class="text-xs text-gray-400">Cardiologist</div>
+      </div>
+    </div>
+    <a href="/" class="block text-center text-xs text-gray-400 mt-3 hover:text-red-500 transition-colors">Sign Out</a>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════════════════════════════ -->
+<main class="flex-1 overflow-y-auto scroll-thin p-6">
+
+  <!-- Shared header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="font-display text-2xl font-bold text-gray-800">Welcome back, <span style="color:var(--green-dark)">Dr. Chen</span> 👋</h1>
+      <p class="text-gray-400 text-sm mt-0.5">Monday, February 23, 2026 · <span class="text-green-600 font-medium" id="apptCount">5 appointments today</span></p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button class="btn-green" onclick="openModal('modalNewAppt')">+ New Appointment</button>
+      <div class="relative">
+        <div class="neo w-11 h-11 flex items-center justify-center rounded-xl cursor-pointer" onclick="toggleNotif()" id="bellBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#6b7280"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+        </div>
+        <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center" style="font-size:.65rem;font-weight:700" id="bellCount">3</span>
+        <!-- Notification Dropdown -->
+        <div id="notifDropdown">
+          <div class="p-3 border-b border-gray-100 font-semibold text-sm text-gray-700">Notifications</div>
+          <div id="notifList" class="divide-y divide-gray-50 max-h-72 overflow-y-auto scroll-thin"></div>
+          <div class="p-3 text-center">
+            <button class="text-xs text-green-600 font-semibold hover:underline" onclick="clearAllNotifs()">Mark all as read</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD SECTION ── -->
+  <div class="section-panel active" id="section-dashboard">
+
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="stat-card cursor-pointer hover:scale-105 transition-transform" onclick="switchSection(document.querySelector('[data-section=patients]'))">
+        <div class="text-xs text-gray-400 font-medium mb-1">Today's Patients</div>
+        <div class="font-display text-3xl font-bold text-gray-800" id="statPatients">5</div>
+        <div class="text-xs text-green-600 mt-1">↑ 2 from yesterday</div>
+      </div>
+      <div class="stat-card cursor-pointer hover:scale-105 transition-transform" onclick="switchSection(document.querySelector('[data-section=messages]'))">
+        <div class="text-xs text-gray-400 font-medium mb-1">Pending Reviews</div>
+        <div class="font-display text-3xl font-bold text-gray-800">12</div>
+        <div class="text-xs text-orange-500 mt-1">3 urgent</div>
+      </div>
+      <div class="stat-card hover:scale-105 transition-transform">
+        <div class="text-xs text-gray-400 font-medium mb-1">Recovery Rate</div>
+        <div class="font-display text-3xl font-bold text-gray-800">94%</div>
+        <div class="text-xs text-green-600 mt-1">↑ 2% this month</div>
+      </div>
+      <div class="stat-card hover:scale-105 transition-transform">
+        <div class="text-xs text-gray-400 font-medium mb-1">Avg. Consult Time</div>
+        <div class="font-display text-3xl font-bold text-gray-800">18m</div>
+        <div class="text-xs text-gray-400 mt-1">Target: 20m</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      <!-- Calendar -->
+      <div class="neo p-5">
+        <div class="flex items-center justify-between mb-4">
+          <span class="font-display font-bold text-gray-800" id="calTitle"></span>
+          <div class="flex gap-1">
+            <button class="w-7 h-7 rounded-lg border border-gray-200 bg-gray-50 text-sm hover:bg-green-50 transition-colors" onclick="changeMonth(-1)">‹</button>
+            <button class="w-7 h-7 rounded-lg border border-gray-200 bg-gray-50 text-sm hover:bg-green-50 transition-colors" onclick="changeMonth(1)">›</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center mb-2">
+          <% ['S','M','T','W','T','F','S'].forEach(d => { %>
+            <div class="text-xs text-gray-400 font-semibold py-1"><%= d %></div>
+          <% }) %>
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center" id="calGrid"></div>
+        <div class="flex items-center gap-2 mt-3 text-xs text-gray-400">
+          <span class="inline-block w-2 h-2 rounded-full" style="background:var(--purple)"></span> Has appointment
+        </div>
+      </div>
+
+      <!-- Notifications panel -->
+      <div class="neo p-5">
+        <div class="flex items-center justify-between mb-4">
+          <span class="font-display font-bold text-gray-800">Notifications</span>
+          <span class="badge badge-high" id="notifCountBadge"><%= notifications.length %> new</span>
+        </div>
+        <div class="space-y-3 overflow-y-auto scroll-thin" style="max-height:200px" id="notifCards">
+          <% notifications.forEach((n,i) => { %>
+          <div class="notif-<%= n.type %> rounded-xl p-3 flex items-start justify-between gap-2" id="notif-<%= i %>">
+            <div>
+              <div class="text-xs font-semibold text-gray-800"><%= n.msg %></div>
+              <div class="text-xs text-gray-400 mt-0.5"><%= n.time %></div>
+            </div>
+            <button onclick="dismissNotif(<%= i %>)" class="text-gray-300 hover:text-red-400 flex-shrink-0 text-sm transition-colors">✕</button>
+          </div>
+          <% }) %>
+        </div>
+        <button class="btn-green w-full mt-3" onclick="switchSection(document.querySelector('[data-section=messages]'))">View All Messages</button>
+      </div>
+
+      <!-- Trend Chart -->
+      <div class="neo p-5">
+        <div class="font-display font-bold text-gray-800 mb-1">Patient Trends</div>
+        <div class="text-xs text-gray-400 mb-3">This week's consultations</div>
+        <canvas id="trendChart" height="155"></canvas>
+      </div>
+    </div>
+
+    <!-- Today's Appointments Table -->
+    <div class="neo p-5 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <span class="font-display font-bold text-gray-800">Today's Appointments</span>
+        <div class="flex gap-3 items-center">
+          <input type="text" placeholder="🔍  Search patient…" id="apptSearch" oninput="filterTable()" style="width:200px"/>
+          <select id="apptFilter" onchange="filterTable()" style="width:140px">
+            <option value="">All Types</option>
+            <option>Cardiology</option><option>General</option>
+            <option>Neurology</option><option>Orthopedics</option>
+          </select>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table style="width:100%;border-collapse:separate;border-spacing:0">
+          <thead>
+            <tr class="border-b border-gray-100">
+              <th class="text-left text-xs font-semibold text-gray-400 py-2 px-3 uppercase">Time</th>
+              <th class="text-left text-xs font-semibold text-gray-400 py-2 px-3 uppercase">Patient</th>
+              <th class="text-left text-xs font-semibold text-gray-400 py-2 px-3 uppercase">Type</th>
+              <th class="text-left text-xs font-semibold text-gray-400 py-2 px-3 uppercase">Status</th>
+              <th class="text-left text-xs font-semibold text-gray-400 py-2 px-3 uppercase">Priority</th>
+              <th class="text-left text-xs font-semibold text-gray-400 py-2 px-3 uppercase">Action</th>
+            </tr>
+          </thead>
+          <tbody id="apptTableBody">
+            <% appointments.forEach((a,i) => { %>
+            <tr class="appt-row border-b border-gray-50 hover:bg-green-50 transition-colors"
+                data-patient="<%= a.patient.toLowerCase() %>" data-type="<%= a.type %>">
+              <td class="py-3 px-3 text-sm font-medium text-gray-700"><%= a.time %></td>
+              <td class="py-3 px-3">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);color:#059669">
+                    <%= a.patient.split(' ').map(n=>n[0]).join('') %>
+                  </div>
+                  <span class="text-sm font-medium text-gray-800"><%= a.patient %></span>
+                </div>
+              </td>
+              <td class="py-3 px-3 text-sm text-gray-500"><%= a.type %></td>
+              <td class="py-3 px-3">
+                <span class="badge <%= a.status==='Confirmed'?'badge-confirmed':'badge-pending' %>" id="appt-status-<%= i %>"><%= a.status %></span>
+              </td>
+              <td class="py-3 px-3">
+                <span class="badge badge-<%= a.priority==='high'?'high':a.priority==='medium'?'med':'low' %>">
+                  <%= a.priority.charAt(0).toUpperCase()+a.priority.slice(1) %>
+                </span>
+              </td>
+              <td class="py-3 px-3">
+                <button class="btn-green" style="padding:.35rem .875rem;font-size:.78rem"
+                  onclick="startSession('<%= a.patient %>')">Start Session</button>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        <div id="noResults" class="hidden text-center py-6 text-gray-400 text-sm">No matching appointments found.</div>
+      </div>
+    </div>
+
+    <!-- Collaboration Portal -->
+    <div class="neo p-5">
+      <div class="font-display font-bold text-gray-800 mb-4">Collaboration Portal</div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <% colleagues.forEach(c => { %>
+        <div class="rounded-2xl p-4 text-center border border-gray-100 bg-gray-50 hover:bg-green-50 hover:border-green-100 transition-all cursor-pointer"
+             onclick="openMessage('<%= c.name %>')">
+          <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold mx-auto mb-3" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);color:var(--purple)">
+            <%= c.name.split(' ').slice(-1)[0][0] %><%= c.name.split(' ')[1][0] %>
+          </div>
+          <div class="text-xs font-semibold text-gray-800 leading-tight"><%= c.name %></div>
+          <div class="text-xs text-gray-400 mt-0.5"><%= c.specialty %></div>
+          <div class="flex items-center justify-center gap-1 mt-2">
+            <span class="status-dot dot-<%= c.status %>"></span>
+            <span class="text-xs text-gray-400 capitalize"><%= c.status %></span>
+          </div>
+          <button class="btn-purple mt-2 w-full" style="padding:.3rem .75rem;font-size:.75rem"
+            onclick="event.stopPropagation();openMessage('<%= c.name %>')">Message</button>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCHEDULE SECTION ── -->
+  <div class="section-panel" id="section-schedule">
+    <div class="neo p-6">
+      <h2 class="font-display font-bold text-xl text-gray-800 mb-5">Full Schedule</h2>
+      <div class="grid grid-cols-7 gap-2 mb-6" id="weekStrip"></div>
+      <div class="space-y-3" id="scheduleList"></div>
+    </div>
+  </div>
+
+  <!-- ── PATIENTS SECTION ── -->
+  <div class="section-panel" id="section-patients">
+    <div class="neo p-6">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="font-display font-bold text-xl text-gray-800">All Patients</h2>
+        <input type="text" placeholder="🔍  Search…" id="patientsSearch" oninput="filterPatients()" style="width:220px"/>
+      </div>
+      <div class="space-y-3" id="patientsList"></div>
+    </div>
+  </div>
+
+  <!-- ── MESSAGES SECTION ── -->
+  <div class="section-panel" id="section-messages">
+    <div class="neo p-6">
+      <h2 class="font-display font-bold text-xl text-gray-800 mb-5">Messages</h2>
+      <div class="space-y-3" id="messagesList"></div>
+    </div>
+  </div>
+
+  <!-- ── COLLEAGUES SECTION ── -->
+  <div class="section-panel" id="section-colleagues">
+    <div class="neo p-6">
+      <h2 class="font-display font-bold text-xl text-gray-800 mb-5">Colleagues Directory</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="colleaguesList"></div>
+    </div>
+  </div>
+
+  <!-- ── REPORTS SECTION ── -->
+  <div class="section-panel" id="section-reports">
+    <div class="neo p-6">
+      <h2 class="font-display font-bold text-xl text-gray-800 mb-5">Analytics & Reports</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <div class="text-sm font-semibold text-gray-600 mb-3">Monthly Patient Volume</div>
+          <canvas id="reportChart1" height="200"></canvas>
+        </div>
+        <div>
+          <div class="text-sm font-semibold text-gray-600 mb-3">Diagnosis Breakdown</div>
+          <canvas id="reportChart2" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ── Data ─────────────────────────────────────────────────
+const appointments = <%- JSON.stringify(appointments) %>;
+const notifications = <%- JSON.stringify(notifications) %>;
+const colleagues    = <%- JSON.stringify(colleagues) %>;
+
+let calYear = 2026, calMonth = 1; // 0-based: 1 = Feb
+const apptDays = [5,10,12,15,19,23,25,26];
+const today = 23;
+let notifData = [...notifications];
+
+// ── Toast ─────────────────────────────────────────────────
+function toast(msg, color='#1f2937') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.background = color;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── Modal helpers ─────────────────────────────────────────
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m =>
+  m.addEventListener('click', e => { if(e.target===m) m.classList.remove('open'); })
+);
+
+// ── Section switching ─────────────────────────────────────
+function switchSection(el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.section-panel').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  const sec = el.dataset.section;
+  document.getElementById('section-'+sec).classList.add('active');
+  // lazy-render sections
+  if(sec==='schedule')   renderSchedule();
+  if(sec==='patients')   renderPatients();
+  if(sec==='messages')   renderMessages();
+  if(sec==='colleagues') renderColleagues();
+  if(sec==='reports')    renderReports();
+}
+
+// ── Calendar ─────────────────────────────────────────────
+const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+function renderCalendar() {
+  const title = document.getElementById('calTitle');
+  title.textContent = monthNames[calMonth] + ' ' + calYear;
+  const grid = document.getElementById('calGrid');
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  let html = '';
+  for(let i=0;i<firstDay;i++) html += '<div></div>';
+  for(let d=1;d<=daysInMonth;d++) {
+    const isToday = d===today && calMonth===1 && calYear===2026;
+    const hasAppt = apptDays.includes(d) && calMonth===1 && calYear===2026;
+    const cls = `cal-day${isToday?' today':''}${hasAppt&&!isToday?' has-appt':''}`;
+    html += `<div class="${cls}" onclick="calDayClick(${d})" title="${hasAppt?'Has appointment':''}">${d}</div>`;
+  }
+  grid.innerHTML = html;
+}
+function changeMonth(dir) {
+  calMonth += dir;
+  if(calMonth>11) { calMonth=0; calYear++; }
+  if(calMonth<0)  { calMonth=11; calYear--; }
+  renderCalendar();
+}
+function calDayClick(d) {
+  const hasAppt = apptDays.includes(d) && calMonth===1 && calYear===2026;
+  if(hasAppt) toast(`📅 Appointments on ${d} ${monthNames[calMonth]}`, '#3ecf8e');
+  else toast(`No appointments on ${d} ${monthNames[calMonth]}`, '#6b7280');
+}
+
+// ── Notifications ─────────────────────────────────────────
+function dismissNotif(i) {
+  const el = document.getElementById('notif-'+i);
+  if(el) { el.style.opacity='0'; el.style.transform='translateX(20px)'; el.style.transition='all .3s'; setTimeout(()=>el.remove(),300); }
+  notifData[i] = null;
+  updateNotifCount();
+}
+function updateNotifCount() {
+  const count = notifData.filter(Boolean).length;
+  document.getElementById('notifCountBadge').textContent = count + ' new';
+  document.getElementById('bellCount').textContent = count;
+  if(count===0) document.getElementById('bellCount').style.display='none';
+}
+function clearAllNotifs() {
+  notifData = [];
+  document.getElementById('notifCards').innerHTML = '<p class="text-xs text-gray-400 text-center py-4">All caught up! 🎉</p>';
+  updateNotifCount();
+  toast('All notifications cleared', '#3ecf8e');
+  document.getElementById('notifDropdown').classList.remove('open');
+}
+function toggleNotif() {
+  const dd = document.getElementById('notifDropdown');
+  dd.classList.toggle('open');
+  // Populate dropdown
+  const list = document.getElementById('notifList');
+  list.innerHTML = notifData.filter(Boolean).map((n,i) =>
+    `<div class="p-3 hover:bg-gray-50 transition-colors">
+      <div class="text-xs font-semibold text-gray-800">${n.msg}</div>
+      <div class="text-xs text-gray-400 mt-0.5">${n.time}</div>
+    </div>`
+  ).join('') || '<p class="text-xs text-gray-400 text-center py-4">No notifications</p>';
+}
+document.addEventListener('click', e => {
+  if(!document.getElementById('bellBtn').contains(e.target) &&
+     !document.getElementById('notifDropdown').contains(e.target))
+    document.getElementById('notifDropdown').classList.remove('open');
+});
+
+// ── Table search/filter ────────────────────────────────────
+function filterTable() {
+  const q = document.getElementById('apptSearch').value.toLowerCase();
+  const t = document.getElementById('apptFilter').value.toLowerCase();
+  let visible = 0;
+  document.querySelectorAll('.appt-row').forEach(row => {
+    const matchQ = row.dataset.patient.includes(q);
+    const matchT = !t || row.dataset.type.toLowerCase()===t;
+    const show = matchQ && matchT;
+    row.style.display = show ? '' : 'none';
+    if(show) visible++;
+  });
+  document.getElementById('noResults').classList.toggle('hidden', visible>0);
+}
+
+// ── Session ───────────────────────────────────────────────
+function startSession(name) {
+  document.getElementById('sessionPatientName').textContent = name;
+  document.getElementById('sessionBP').textContent   = (110+Math.floor(Math.random()*30))+'/'+(70+Math.floor(Math.random()*20));
+  document.getElementById('sessionHR').textContent   = (60+Math.floor(Math.random()*30));
+  document.getElementById('sessionTemp').textContent = (97+Math.random()).toFixed(1)+'°F';
+  openModal('modalSession');
+}
+function endSession() {
+  closeModal('modalSession');
+  toast('✅ Session saved successfully', '#3ecf8e');
+}
+
+// ── New Appointment ───────────────────────────────────────
+function submitNewAppt() {
+  const p = document.getElementById('apptPatient').value.trim();
+  const t = document.getElementById('apptType').value;
+  const d = document.getElementById('apptDate').value;
+  const tm= document.getElementById('apptTime').value;
+  if(!p||!t||!d||!tm) { toast('⚠️ Please fill all fields', '#f59e0b'); return; }
+  closeModal('modalNewAppt');
+  toast(`✅ Appointment booked for ${p}`, '#3ecf8e');
+  document.getElementById('apptPatient').value='';
+  document.getElementById('apptType').value='';
+  document.getElementById('apptDate').value='';
+  document.getElementById('apptTime').value='';
+}
+
+// ── Message ───────────────────────────────────────────────
+function openMessage(name) {
+  document.getElementById('msgColleagueName').textContent = name;
+  document.getElementById('msgBody').value = '';
+  openModal('modalMessage');
+}
+function insertTemplate(tpl) {
+  document.getElementById('msgBody').value = tpl + ' ';
+  document.getElementById('msgBody').focus();
+}
+function sendMessage() {
+  const msg = document.getElementById('msgBody').value.trim();
+  if(!msg) { toast('⚠️ Message cannot be empty', '#f59e0b'); return; }
+  closeModal('modalMessage');
+  toast('📨 Message sent!', '#7c5cfc');
+}
+
+// ── Schedule section ──────────────────────────────────────
+function renderSchedule() {
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const strip = document.getElementById('weekStrip');
+  strip.innerHTML = days.map((d,i) =>
+    `<div class="text-center p-2 rounded-xl cursor-pointer ${i===1?'text-white font-bold':'text-gray-500 hover:bg-green-50'} transition-colors"
+          style="${i===1?'background:linear-gradient(135deg,#3ecf8e,#26a96c)':''}"
+          onclick="this.parentElement.querySelectorAll('div').forEach(x=>x.style.background='');this.style.background='linear-gradient(135deg,#3ecf8e,#26a96c)';this.classList.add('text-white','font-bold')">
+      <div class="text-xs">${d}</div>
+      <div class="text-sm font-bold">${18+i}</div>
+    </div>`
+  ).join('');
+  const list = document.getElementById('scheduleList');
+  list.innerHTML = appointments.map(a =>
+    `<div class="flex items-center justify-between p-4 rounded-xl border border-gray-100 bg-white hover:bg-green-50 transition-colors">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-xs" style="background:linear-gradient(135deg,#3ecf8e,#26a96c)">${a.time.split(' ')[0]}<br><span style="font-size:.6rem">${a.time.split(' ')[1]}</span></div>
+        <div>
+          <div class="font-semibold text-gray-800 text-sm">${a.patient}</div>
+          <div class="text-xs text-gray-400">${a.type}</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="badge ${a.status==='Confirmed'?'badge-confirmed':'badge-pending'}">${a.status}</span>
+        <button class="btn-green" style="padding:.35rem .875rem;font-size:.78rem" onclick="startSession('${a.patient}')">Start</button>
+      </div>
+    </div>`
+  ).join('');
+}
+
+// ── Patients section ──────────────────────────────────────
+const allPatients = [
+  {name:'Alice Morgan', age:42, condition:'Hypertension', bp:'128/82', last:'Feb 20'},
+  {name:'James Liu',    age:35, condition:'Diabetes T2',  bp:'120/78', last:'Feb 18'},
+  {name:'Sara Kim',     age:58, condition:'Migraine',     bp:'118/76', last:'Feb 15'},
+  {name:'Tom Brown',    age:67, condition:'Arrhythmia',   bp:'135/88', last:'Feb 22'},
+  {name:'Nina Patel',   age:29, condition:'Knee injury',  bp:'115/72', last:'Feb 19'},
+];
+function renderPatients(q='') {
+  const list = document.getElementById('patientsList');
+  const filtered = allPatients.filter(p=>p.name.toLowerCase().includes(q.toLowerCase()));
+  list.innerHTML = filtered.map(p =>
+    `<div class="flex items-center justify-between p-4 rounded-xl border border-gray-100 bg-white hover:bg-green-50 transition-colors cursor-pointer"
+          onclick="toast('Opening ${p.name}\\'s records...','#3ecf8e')">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);color:#059669">
+          ${p.name.split(' ').map(n=>n[0]).join('')}
+        </div>
+        <div>
+          <div class="font-semibold text-gray-800 text-sm">${p.name}</div>
+          <div class="text-xs text-gray-400">${p.condition} · Age ${p.age}</div>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="text-xs font-semibold text-gray-700">BP ${p.bp}</div>
+        <div class="text-xs text-gray-400">Last visit: ${p.last}</div>
+      </div>
+    </div>`
+  ).join('') || '<p class="text-center text-gray-400 py-6">No patients found.</p>';
+}
+function filterPatients() { renderPatients(document.getElementById('patientsSearch').value); }
+
+// ── Messages section ──────────────────────────────────────
+const inboxMessages = [
+  {from:'Dr. Sarah Smith', subject:'Re: Patient Alice Morgan referral', time:'10 min ago', unread:true},
+  {from:'Nurse Priya',     subject:'Lab results ready for Tom Brown',   time:'1 hr ago',  unread:true},
+  {from:'Admin',           subject:'Schedule change - Friday 3PM slot', time:'3 hrs ago', unread:true},
+  {from:'Dr. Mike Johnson',subject:'Cardio consult request',            time:'Yesterday', unread:false},
+];
+function renderMessages() {
+  document.getElementById('messagesList').innerHTML = inboxMessages.map((m,i) =>
+    `<div class="flex items-center justify-between p-4 rounded-xl border ${m.unread?'border-green-100 bg-green-50':'border-gray-100 bg-white'} hover:bg-green-50 transition-colors cursor-pointer"
+          onclick="readMessage(${i})">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);color:#7c5cfc">
+          ${m.from.split(' ').map(n=>n[0]).slice(0,2).join('')}
+        </div>
+        <div>
+          <div class="font-semibold text-gray-800 text-sm flex items-center gap-2">
+            ${m.from} ${m.unread?'<span class="w-2 h-2 rounded-full bg-green-500 inline-block"></span>':''}
+          </div>
+          <div class="text-xs text-gray-500">${m.subject}</div>
+        </div>
+      </div>
+      <div class="text-xs text-gray-400 flex-shrink-0">${m.time}</div>
+    </div>`
+  ).join('');
+}
+function readMessage(i) {
+  inboxMessages[i].unread = false;
+  renderMessages();
+  toast('📧 Opening message...', '#7c5cfc');
+  // Update badge
+  const unread = inboxMessages.filter(m=>m.unread).length;
+  document.getElementById('msgBadge').textContent = unread;
+  if(unread===0) document.getElementById('msgBadge').style.display='none';
+}
+
+// ── Colleagues section ────────────────────────────────────
+function renderColleagues() {
+  document.getElementById('colleaguesList').innerHTML = colleagues.map(c =>
+    `<div class="p-5 rounded-2xl border border-gray-100 bg-white hover:bg-purple-50 hover:border-purple-100 transition-all cursor-pointer flex items-center gap-4"
+          onclick="openMessage('${c.name}')">
+      <div class="w-14 h-14 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);color:#7c5cfc">
+        ${c.name.split(' ').slice(-1)[0][0]}${c.name.split(' ')[1][0]}
+      </div>
+      <div class="flex-1">
+        <div class="font-semibold text-gray-800">${c.name}</div>
+        <div class="text-sm text-gray-400">${c.specialty}</div>
+        <div class="flex items-center gap-1 mt-1">
+          <span class="status-dot dot-${c.status}"></span>
+          <span class="text-xs text-gray-400 capitalize">${c.status}</span>
+        </div>
+      </div>
+      <button class="btn-purple" style="padding:.5rem 1rem;font-size:.8rem" onclick="event.stopPropagation();openMessage('${c.name}')">Message</button>
+    </div>`
+  ).join('');
+}
+
+// ── Reports section ───────────────────────────────────────
+let reportChartsCreated = false;
+function renderReports() {
+  if(reportChartsCreated) return;
+  reportChartsCreated = true;
+  new Chart(document.getElementById('reportChart1'), {
+    type:'bar',
+    data:{
+      labels:['Sep','Oct','Nov','Dec','Jan','Feb'],
+      datasets:[{
+        label:'Patients',
+        data:[42,58,51,67,73,61],
+        backgroundColor:['rgba(62,207,142,.7)','rgba(62,207,142,.7)','rgba(62,207,142,.7)','rgba(62,207,142,.7)','rgba(62,207,142,.7)','rgba(62,207,142,.9)'],
+        borderRadius:8
+      }]
+    },
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#f3f4f6'}},x:{grid:{display:false}}}}
+  });
+  new Chart(document.getElementById('reportChart2'), {
+    type:'doughnut',
+    data:{
+      labels:['Cardiology','General','Neurology','Ortho','Other'],
+      datasets:[{data:[35,25,18,12,10],backgroundColor:['#3ecf8e','#7c5cfc','#f59e0b','#ef4444','#94a3b8'],borderWidth:0}]
+    },
+    options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────
+renderCalendar();
+
+// Trend Chart
+new Chart(document.getElementById('trendChart'), {
+  type:'line',
+  data:{
+    labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    datasets:[
+      {label:'Consultations',data:[8,12,7,15,10,5,8],borderColor:'#3ecf8e',backgroundColor:'rgba(62,207,142,.1)',borderWidth:2.5,tension:0.4,fill:true,pointBackgroundColor:'#3ecf8e',pointRadius:4},
+      {label:'New Patients',data:[3,5,2,7,4,2,3],borderColor:'#7c5cfc',backgroundColor:'rgba(124,92,252,.07)',borderWidth:2,tension:0.4,fill:true,pointBackgroundColor:'#7c5cfc',pointRadius:4}
+    ]
+  },
+  options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#f3f4f6'},ticks:{font:{size:10}}},x:{grid:{display:false},ticks:{font:{size:10}}}}}
+});
+</script>
+</body>
+</html>
