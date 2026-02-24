@@ -1,0 +1,56 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+<div class="container py-4">
+  <%- include('../partials/flash') %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold"><i class="fas fa-comments me-2 text-teal"></i>Doctor Knowledge Forum</h3>
+    <a href="/doctor/forum/new" class="btn btn-teal"><i class="fas fa-plus me-2"></i>Start Discussion</a>
+  </div>
+
+  <!-- Category Filter -->
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="/doctor/forum" class="btn btn-sm <%= !category ? 'btn-teal' : 'btn-outline-secondary' %>">All</a>
+    <% ['Case Discussion','Research','Treatment Protocol','Emergency','General'].forEach(cat => { %>
+      <a href="/doctor/forum?category=<%= encodeURIComponent(cat) %>" class="btn btn-sm <%= category === cat ? 'btn-teal' : 'btn-outline-secondary' %>"><%= cat %></a>
+    <% }) %>
+  </div>
+
+  <% if (discussions.length === 0) { %>
+    <div class="text-center py-5 text-muted">
+      <i class="fas fa-comments fa-4x mb-3 opacity-25"></i>
+      <p>No discussions yet. Be the first to start one!</p>
+    </div>
+  <% } else { %>
+    <div class="d-flex flex-column gap-3">
+      <% discussions.forEach(d => { %>
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-start gap-3">
+              <div class="avatar-circle-sm flex-shrink-0">
+                <%= d.isAnonymous ? '?' : (d.author?.user?.name?.charAt(0).toUpperCase() || 'D') %>
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                  <span class="badge category-badge"><%= d.category %></span>
+                  <% d.tags.forEach(t => { %><span class="badge bg-light text-dark border">#<%= t %></span><% }) %>
+                </div>
+                <a href="/doctor/forum/<%= d._id %>" class="text-dark text-decoration-none">
+                  <h6 class="fw-bold mb-1"><%= d.title %></h6>
+                </a>
+                <p class="text-muted small mb-2 line-clamp-2"><%= d.content.substring(0, 150) %><%= d.content.length > 150 ? '...' : '' %></p>
+                <div class="text-muted" style="font-size:0.8rem">
+                  <i class="fas fa-user-md me-1"></i>
+                  <%= d.isAnonymous ? 'Anonymous' : ('Dr. ' + (d.author?.user?.name || 'Unknown')) %>
+                  &bull; <i class="fas fa-reply ms-2 me-1"></i><%= d.replies.length %> replies
+                  &bull; <i class="fas fa-eye ms-2 me-1"></i><%= d.views %> views
+                  &bull; <%= new Date(d.createdAt).toLocaleDateString('en-IN') %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,61 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+<div class="container py-4">
+  <%- include('../partials/flash') %>
+  <h3 class="fw-bold mb-4"><i class="fas fa-user-md me-2 text-teal"></i>Doctor Profile</h3>
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+          <form action="/doctor/profile" method="POST">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Medical Registration Number</label>
+                <input type="text" name="registrationNumber" class="form-control" value="<%= doctor && doctor.registrationNumber || '' %>" placeholder="MH/123456" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Specialization</label>
+                <input type="text" name="specialization" class="form-control" value="<%= doctor && doctor.specialization || '' %>" placeholder="Cardiologist, General Physician" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Hospital / Clinic</label>
+                <input type="text" name="hospital" class="form-control" value="<%= doctor && doctor.hospital || '' %>" placeholder="AIIMS Delhi" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Years of Experience</label>
+                <input type="number" name="experience" class="form-control" value="<%= doctor && doctor.experience || '' %>" placeholder="10" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">District</label>
+                <input type="text" name="district" class="form-control" value="<%= doctor && doctor.district || '' %>" placeholder="South Delhi" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">State</label>
+                <input type="text" name="state" class="form-control" value="<%= doctor && doctor.state || '' %>" placeholder="Delhi" />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-teal mt-4 px-5">
+              <i class="fas fa-save me-2"></i>Save Profile
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body text-center p-4">
+          <div class="avatar-circle mx-auto mb-3"><%= user.name.charAt(0).toUpperCase() %></div>
+          <h5 class="fw-bold">Dr. <%= user.name %></h5>
+          <p class="text-muted small"><%= user.email %></p>
+          <% if (doctor && doctor.verified) { %>
+            <span class="badge bg-success px-3 py-2"><i class="fas fa-check-circle me-1"></i>Verified Doctor</span>
+          <% } else { %>
+            <span class="badge bg-warning text-dark px-3 py-2"><i class="fas fa-clock me-1"></i>Verification Pending</span>
+            <p class="text-muted small mt-2">Complete your profile and submit registration number for admin verification.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

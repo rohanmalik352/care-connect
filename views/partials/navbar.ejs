@@ -1,0 +1,36 @@
+<nav class="navbar navbar-expand-lg navbar-dark cc-navbar px-3">
+  <a class="navbar-brand fw-bold fs-4" href="/">
+    <i class="fas fa-heartbeat me-2 text-danger"></i>CareConnect
+  </a>
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navMain">
+    <ul class="navbar-nav ms-auto align-items-center gap-1">
+      <% if (typeof user !== 'undefined' && user) { %>
+        <% if (user.role === 'patient') { %>
+          <li class="nav-item"><a class="nav-link" href="/patient/dashboard"><i class="fas fa-th-large me-1"></i>Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="/patient/records"><i class="fas fa-file-medical me-1"></i>Records</a></li>
+          <li class="nav-item"><a class="nav-link" href="/patient/profile"><i class="fas fa-user me-1"></i>Profile</a></li>
+        <% } else if (user.role === 'doctor') { %>
+          <li class="nav-item"><a class="nav-link" href="/doctor/dashboard"><i class="fas fa-th-large me-1"></i>Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="/doctor/search-patient"><i class="fas fa-search me-1"></i>Find Patient</a></li>
+          <li class="nav-item"><a class="nav-link" href="/doctor/forum"><i class="fas fa-comments me-1"></i>Forum</a></li>
+          <li class="nav-item"><a class="nav-link" href="/doctor/profile"><i class="fas fa-user-md me-1"></i>Profile</a></li>
+        <% } else if (user.role === 'admin') { %>
+          <li class="nav-item"><a class="nav-link" href="/admin/dashboard"><i class="fas fa-cog me-1"></i>Admin</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/doctors"><i class="fas fa-user-md me-1"></i>Doctors</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/patients"><i class="fas fa-users me-1"></i>Patients</a></li>
+        <% } %>
+        <li class="nav-item">
+          <a class="nav-link btn btn-outline-danger btn-sm ms-2 px-3" href="/auth/logout">
+            <i class="fas fa-sign-out-alt me-1"></i>Logout
+          </a>
+        </li>
+      <% } else { %>
+        <li class="nav-item"><a class="nav-link" href="/auth/login">Login</a></li>
+        <li class="nav-item"><a class="nav-link btn btn-teal btn-sm ms-2 px-3" href="/auth/register">Register</a></li>
+      <% } %>
+    </ul>
+  </div>
+</nav>

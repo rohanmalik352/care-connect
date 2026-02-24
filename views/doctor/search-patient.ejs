@@ -1,0 +1,53 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+<div class="container py-4">
+  <%- include('../partials/flash') %>
+  <h3 class="fw-bold mb-4"><i class="fas fa-search me-2 text-teal"></i>Find Patient</h3>
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+      <form action="/doctor/search-patient" method="GET" class="d-flex gap-3">
+        <input type="text" name="q" class="form-control form-control-lg" value="<%= q || '' %>" placeholder="Search by patient name or ABHA ID..." />
+        <button type="submit" class="btn btn-teal btn-lg px-4">
+          <i class="fas fa-search me-2"></i>Search
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <% if (typeof q !== 'undefined' && q) { %>
+    <h5 class="fw-semibold mb-3">Results for "<%= q %>"</h5>
+    <% if (patients.length === 0) { %>
+      <div class="text-center py-5 text-muted">
+        <i class="fas fa-user-slash fa-3x mb-3 opacity-25"></i>
+        <p>No patients found matching "<%= q %>"</p>
+      </div>
+    <% } else { %>
+      <div class="row g-3">
+        <% patients.forEach(p => { %>
+          <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                  <div class="avatar-circle-sm me-3"><%= p.user?.name?.charAt(0).toUpperCase() || '?' %></div>
+                  <div>
+                    <h6 class="fw-bold mb-0"><%= p.user?.name || 'Unknown' %></h6>
+                    <small class="text-muted"><%= p.user?.email %></small>
+                  </div>
+                </div>
+                <div class="text-muted small mb-1">
+                  <% if (p.abhaId) { %><i class="fas fa-id-card me-1 text-teal"></i>ABHA: <%= p.abhaId %><br><% } %>
+                  <% if (p.bloodGroup) { %><i class="fas fa-tint me-1 text-danger"></i><%= p.bloodGroup %> &bull; <% } %>
+                  <% if (p.gender) { %><%= p.gender %><% } %>
+                </div>
+                <a href="/doctor/patient/<%= p._id %>" class="btn btn-teal btn-sm w-100 mt-3">
+                  <i class="fas fa-folder-open me-1"></i>View Records
+                </a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>

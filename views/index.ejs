@@ -1,0 +1,147 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<!-- Hero Section -->
+<section class="hero-section d-flex align-items-center">
+  <div class="container text-white text-center">
+    <div class="mb-4">
+      <i class="fas fa-heartbeat hero-icon"></i>
+    </div>
+    <h1 class="display-4 fw-bold">CareConnect</h1>
+    <p class="lead mb-4 opacity-90">Unified Patient Records & Doctor Collaboration Platform</p>
+    <p class="mb-5 opacity-75 fs-5">Connecting patients, doctors, and healthcare across India — securely, efficiently, and at scale.</p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a href="/auth/register" class="btn btn-light btn-lg px-5 fw-semibold">
+        <i class="fas fa-user-plus me-2"></i>Get Started
+      </a>
+      <a href="/auth/login" class="btn btn-outline-light btn-lg px-5">
+        <i class="fas fa-sign-in-alt me-2"></i>Login
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Bar -->
+<section class="stats-bar py-4 bg-white shadow-sm">
+  <div class="container">
+    <div class="row text-center g-4">
+      <div class="col-md-3">
+        <div class="stat-item">
+          <div class="stat-number text-teal fw-bold">10K+</div>
+          <div class="text-muted">Patients</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-item">
+          <div class="stat-number text-teal fw-bold">500+</div>
+          <div class="text-muted">Verified Doctors</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-item">
+          <div class="stat-number text-teal fw-bold">30+</div>
+          <div class="text-muted">Districts</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-item">
+          <div class="stat-number text-teal fw-bold">99.9%</div>
+          <div class="text-muted">Uptime</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-2">Why CareConnect?</h2>
+    <p class="text-center text-muted mb-5">A complete healthcare ecosystem, from records to collaboration</p>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="feature-card card h-100 border-0 shadow-sm p-4 text-center">
+          <div class="feature-icon mx-auto mb-3"><i class="fas fa-fingerprint"></i></div>
+          <h5 class="fw-semibold">Biometric Access</h5>
+          <p class="text-muted">Authorized doctors access patient records securely using biometric verification via UIDAI integration.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card card h-100 border-0 shadow-sm p-4 text-center">
+          <div class="feature-icon mx-auto mb-3"><i class="fas fa-history"></i></div>
+          <h5 class="fw-semibold">Complete Medical History</h5>
+          <p class="text-muted">Every visit, prescription, lab report, and doctor note in one unified, searchable record.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card card h-100 border-0 shadow-sm p-4 text-center">
+          <div class="feature-icon mx-auto mb-3"><i class="fas fa-comments"></i></div>
+          <h5 class="fw-semibold">Doctor Collaboration</h5>
+          <p class="text-muted">Doctors connect, discuss complex cases, and share medical knowledge across hospitals nationwide.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card card h-100 border-0 shadow-sm p-4 text-center">
+          <div class="feature-icon mx-auto mb-3"><i class="fas fa-map-marker-alt"></i></div>
+          <h5 class="fw-semibold">District to National</h5>
+          <p class="text-muted">Starting at the district level, scaling to a pan-India health platform connecting all hospitals.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card card h-100 border-0 shadow-sm p-4 text-center">
+          <div class="feature-icon mx-auto mb-3"><i class="fas fa-shield-alt"></i></div>
+          <h5 class="fw-semibold">Bank-Level Security</h5>
+          <p class="text-muted">AES-256 encryption, role-based access control, full audit logs — DPDP Act compliant.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card card h-100 border-0 shadow-sm p-4 text-center">
+          <div class="feature-icon mx-auto mb-3"><i class="fas fa-wifi"></i></div>
+          <h5 class="fw-semibold">Offline Support</h5>
+          <p class="text-muted">Works in low-bandwidth and rural areas with intelligent offline sync when connectivity is restored.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Who It's For -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-5">Built For Everyone In Healthcare</h2>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="role-card card border-0 shadow-sm p-4 h-100">
+          <div class="d-flex align-items-center mb-3">
+            <div class="role-icon me-3"><i class="fas fa-user-injured"></i></div>
+            <h4 class="fw-bold mb-0">Patients</h4>
+          </div>
+          <ul class="list-unstyled text-muted mb-3">
+            <li class="mb-2"><i class="fas fa-check text-teal me-2"></i>Access your complete medical history anytime</li>
+            <li class="mb-2"><i class="fas fa-check text-teal me-2"></i>Share records with any doctor securely</li>
+            <li class="mb-2"><i class="fas fa-check text-teal me-2"></i>Track prescriptions and follow-up appointments</li>
+            <li class="mb-2"><i class="fas fa-check text-teal me-2"></i>No more carrying physical reports</li>
+          </ul>
+          <a href="/auth/register" class="btn btn-teal mt-auto">Register as Patient</a>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="role-card card border-0 shadow-sm p-4 h-100">
+          <div class="d-flex align-items-center mb-3">
+            <div class="role-icon me-3 doctor"><i class="fas fa-user-md"></i></div>
+            <h4 class="fw-bold mb-0">Doctors</h4>
+          </div>
+          <ul class="list-unstyled text-muted mb-3">
+            <li class="mb-2"><i class="fas fa-check text-teal me-2"></i>Instant access to patient history during consultation</li>
+            <li class="mb-2"><i class="fas fa-check text-teal me-2"></i>Add records, prescriptions, and lab reports</li>
+            <li class="mb-2"><i class="fas fa-check text-teal me-2"></i>Collaborate with peers on complex cases</li>
+            <li class="mb-2"><i class="fas fa-check text-teal me-2"></i>Share expertise in the doctor knowledge forum</li>
+          </ul>
+          <a href="/auth/register" class="btn btn-teal mt-auto">Register as Doctor</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

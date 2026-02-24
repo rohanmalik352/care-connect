@@ -1,0 +1,53 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<div class="main-content">
+  <div class="container py-4">
+    <%- include('../partials/flash') %>
+    <h3 class="fw-bold mb-4">
+      <i class="fas fa-user-md me-2 text-teal"></i>All Doctors (<%= doctors.length %>)
+    </h3>
+    
+    <div class="table-responsive card border-0 shadow-sm table-card">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Specialization</th>
+            <th>Hospital</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% doctors.forEach(d => { %>
+            <tr>
+              <td><strong>Dr. <%= d.user?.name %></strong></td>
+              <td><%= d.user?.email %></td>
+              <td><%= d.specialization || '—' %></td>
+              <td><%= d.hospital || '—' %></td>
+              <td>
+                <% if (d.verified) { %>
+                  <span class="badge-verified">Verified</span>
+                <% } else { %>
+                  <span class="badge bg-warning text-dark">Pending</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (!d.verified) { %>
+                  <form action="/admin/doctors/<%= d._id %>/verify" method="POST" style="display:inline">
+                    <button type="submit" class="btn btn-teal btn-sm">Verify</button>
+                  </form>
+                <% } else { %>
+                  <span class="text-muted small">—</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

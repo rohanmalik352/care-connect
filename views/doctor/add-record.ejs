@@ -1,0 +1,110 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+<div class="container py-4">
+  <%- include('../partials/flash') %>
+  <h3 class="fw-bold mb-1"><i class="fas fa-file-medical-alt me-2 text-teal"></i>Add Medical Record</h3>
+  <p class="text-muted mb-4">Patient: <strong><%= patient.user?.name %></strong></p>
+
+  <form action="/doctor/add-record/<%= patient._id %>" method="POST">
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header bg-white py-3"><h6 class="fw-bold mb-0">Visit Details</h6></div>
+          <div class="card-body p-4">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Visit Type</label>
+                <select name="visitType" class="form-select" required>
+                  <option value="OPD">OPD (Outpatient)</option>
+                  <option value="IPD">IPD (Inpatient)</option>
+                  <option value="Emergency">Emergency</option>
+                  <option value="Teleconsult">Teleconsult</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Follow-up Date</label>
+                <input type="date" name="followUpDate" class="form-control" />
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-semibold">Chief Complaint</label>
+                <input type="text" name="chiefComplaint" class="form-control" placeholder="e.g., Chest pain for 2 days" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Symptoms <small class="text-muted">(comma separated)</small></label>
+                <input type="text" name="symptoms" class="form-control" placeholder="Fever, Cough, Headache" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Diagnosis <small class="text-muted">(comma separated)</small></label>
+                <input type="text" name="diagnosis" class="form-control" placeholder="Viral Fever, URTI" />
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-semibold">Doctor's Notes</label>
+                <textarea name="doctorNotes" class="form-control" rows="3" placeholder="Clinical observations, treatment plan..."></textarea>
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="isEmergency" id="isEmergency" />
+                  <label class="form-check-label fw-semibold text-danger" for="isEmergency">Mark as Emergency Visit</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prescription -->
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold mb-0"><i class="fas fa-pills me-2 text-teal"></i>Prescription</h6>
+            <button type="button" class="btn btn-sm btn-outline-teal" id="addMedBtn">+ Add Medicine</button>
+          </div>
+          <div class="card-body p-4" id="prescriptionContainer">
+            <div class="medicine-row row g-2 mb-2">
+              <div class="col-md-3"><input type="text" name="medicine" class="form-control" placeholder="Medicine name" /></div>
+              <div class="col-md-3"><input type="text" name="dosage" class="form-control" placeholder="Dosage (500mg)" /></div>
+              <div class="col-md-3"><input type="text" name="duration" class="form-control" placeholder="Duration (5 days)" /></div>
+              <div class="col-md-3"><input type="text" name="instructions" class="form-control" placeholder="After meals" /></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm sticky-top" style="top:80px">
+          <div class="card-body p-4">
+            <h6 class="fw-bold mb-3">Patient Summary</h6>
+            <div class="info-row"><span>Name</span><strong><%= patient.user?.name %></strong></div>
+            <div class="info-row"><span>Blood Group</span><strong><%= patient.bloodGroup || '—' %></strong></div>
+            <div class="info-row"><span>Gender</span><strong><%= patient.gender || '—' %></strong></div>
+            <% if (patient.allergies && patient.allergies.length > 0) { %>
+              <div class="mt-3 p-2 bg-warning bg-opacity-10 rounded border border-warning">
+                <small><i class="fas fa-exclamation-triangle text-warning me-1"></i><strong>Allergies:</strong> <%= patient.allergies.join(', ') %></small>
+              </div>
+            <% } %>
+            <% if (patient.chronicConditions && patient.chronicConditions.length > 0) { %>
+              <div class="mt-2 p-2 bg-danger bg-opacity-10 rounded border border-danger">
+                <small><i class="fas fa-heartbeat text-danger me-1"></i><strong>Chronic:</strong> <%= patient.chronicConditions.join(', ') %></small>
+              </div>
+            <% } %>
+            <button type="submit" class="btn btn-teal w-100 mt-4 btn-lg">
+              <i class="fas fa-save me-2"></i>Save Record
+            </button>
+            <a href="/doctor/patient/<%= patient._id %>" class="btn btn-outline-secondary w-100 mt-2">Cancel</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<script>
+document.getElementById('addMedBtn').addEventListener('click', () => {
+  const container = document.getElementById('prescriptionContainer');
+  const row = document.createElement('div');
+  row.className = 'medicine-row row g-2 mb-2';
+  row.innerHTML = `<div class="col-md-3"><input type="text" name="medicine" class="form-control" placeholder="Medicine name"/></div>
+    <div class="col-md-3"><input type="text" name="dosage" class="form-control" placeholder="Dosage"/></div>
+    <div class="col-md-3"><input type="text" name="duration" class="form-control" placeholder="Duration"/></div>
+    <div class="col-md-3"><input type="text" name="instructions" class="form-control" placeholder="Instructions"/></div>`;
+  container.appendChild(row);
+});
+</script>
+<%- include('../partials/footer') %>

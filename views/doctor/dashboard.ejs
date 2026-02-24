@@ -1,0 +1,111 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+<div class="container py-4">
+  <%- include('../partials/flash') %>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Dr. <%= user.name %></h2>
+      <p class="text-muted mb-0"><%= doctor && doctor.specialization || 'General Physician' %> &bull; <%= doctor && doctor.hospital || 'Hospital not set' %></p>
+    </div>
+    <% if (doctor && !doctor.verified) { %>
+      <span class="badge bg-warning text-dark fs-6 px-3 py-2"><i class="fas fa-clock me-1"></i>Verification Pending</span>
+    <% } else { %>
+      <span class="badge bg-success fs-6 px-3 py-2"><i class="fas fa-check-circle me-1"></i>Verified</span>
+    <% } %>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="stat-card card border-0 shadow-sm text-center p-3">
+        <div class="stat-icon teal mb-2"><i class="fas fa-users"></i></div>
+        <div class="fw-bold fs-4"><%= patientCount %></div>
+        <div class="text-muted small">Patients Seen</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card card border-0 shadow-sm text-center p-3">
+        <div class="stat-icon blue mb-2"><i class="fas fa-file-medical"></i></div>
+        <div class="fw-bold fs-4"><%= recentRecords.length %></div>
+        <div class="text-muted small">Recent Records</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card card border-0 shadow-sm text-center p-3">
+        <div class="stat-icon green mb-2"><i class="fas fa-comments"></i></div>
+        <div class="fw-bold fs-4"><%= discussions.length %></div>
+        <div class="text-muted small">Forum Posts</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="/doctor/search-patient" class="stat-card card border-0 shadow-sm text-center p-3 d-block text-decoration-none h-100">
+        <div class="stat-icon red mb-2"><i class="fas fa-search"></i></div>
+        <div class="fw-bold">Find</div>
+        <div class="text-muted small">Patient</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+          <h5 class="fw-bold mb-0"><i class="fas fa-history me-2 text-teal"></i>Recent Patient Visits</h5>
+          <a href="/doctor/search-patient" class="btn btn-sm btn-teal">Search Patient</a>
+        </div>
+        <div class="card-body p-0">
+          <% if (recentRecords.length === 0) { %>
+            <div class="text-center py-5 text-muted">
+              <i class="fas fa-file-medical fa-3x mb-3 opacity-25"></i>
+              <p>No records yet. Search for a patient to begin.</p>
+            </div>
+          <% } else { %>
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-light"><tr><th>Date</th><th>Patient</th><th>Type</th><th>Diagnosis</th><th></th></tr></thead>
+                <tbody>
+                  <% recentRecords.forEach(r => { %>
+                    <tr>
+                      <td><%= new Date(r.visitDate).toLocaleDateString('en-IN') %></td>
+                      <td><%= r.patient?.user?.name || 'Unknown' %></td>
+                      <td><span class="badge bg-teal"><%= r.visitType %></span></td>
+                      <td><%= r.diagnosis?.slice(0,2).join(', ') || '—' %></td>
+                      <td><a href="/doctor/patient/<%= r.patient?._id %>" class="btn btn-sm btn-outline-secondary">View</a></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+          <h6 class="fw-bold mb-0"><i class="fas fa-comments me-2 text-teal"></i>Latest Forum</h6>
+          <a href="/doctor/forum" class="btn btn-sm btn-outline-teal">View All</a>
+        </div>
+        <div class="list-group list-group-flush">
+          <% if (discussions.length === 0) { %>
+            <div class="p-3 text-muted text-center small">No discussions yet.</div>
+          <% } else { %>
+            <% discussions.forEach(d => { %>
+              <a href="/doctor/forum/<%= d._id %>" class="list-group-item list-group-item-action px-3 py-3">
+                <div class="fw-semibold small text-truncate"><%= d.title %></div>
+                <div class="text-muted" style="font-size:0.78rem">
+                  <span class="badge bg-light text-dark border me-1"><%= d.category %></span>
+                  <%= d.replies.length %> replies &bull; <%= d.views %> views
+                </div>
+              </a>
+            <% }) %>
+          <% } %>
+        </div>
+        <div class="card-footer bg-white text-center">
+          <a href="/doctor/forum/new" class="btn btn-teal btn-sm w-100"><i class="fas fa-plus me-1"></i>Start Discussion</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

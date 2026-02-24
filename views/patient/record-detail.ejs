@@ -1,0 +1,88 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+<div class="container py-4">
+  <a href="/patient/records" class="btn btn-outline-secondary btn-sm mb-4"><i class="fas fa-arrow-left me-1"></i>Back to Records</a>
+  <% if (!record) { %>
+    <p class="text-muted">Record not found.</p>
+  <% } else { %>
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header bg-teal text-white py-3 d-flex justify-content-between">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-file-medical me-2"></i>Visit Summary</h5>
+            <div>
+              <span class="badge bg-white text-teal"><%= record.visitType %></span>
+              <% if (record.isEmergency) { %><span class="badge bg-danger ms-1">Emergency</span><% } %>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-sm-6">
+                <small class="text-muted">Visit Date</small>
+                <p class="fw-semibold"><%= new Date(record.visitDate).toLocaleDateString('en-IN', {dateStyle:'long'}) %></p>
+              </div>
+              <div class="col-sm-6">
+                <small class="text-muted">Doctor</small>
+                <p class="fw-semibold">Dr. <%= record.doctor?.user?.name || 'Unknown' %></p>
+              </div>
+              <div class="col-sm-6">
+                <small class="text-muted">Hospital</small>
+                <p class="fw-semibold"><%= record.hospital || '—' %></p>
+              </div>
+              <% if (record.followUpDate) { %>
+              <div class="col-sm-6">
+                <small class="text-muted">Follow-up Date</small>
+                <p class="fw-semibold text-warning"><%= new Date(record.followUpDate).toLocaleDateString('en-IN') %></p>
+              </div>
+              <% } %>
+            </div>
+            <hr>
+            <h6 class="fw-bold">Chief Complaint</h6>
+            <p><%= record.chiefComplaint || '—' %></p>
+            <% if (record.symptoms && record.symptoms.length > 0) { %>
+              <h6 class="fw-bold">Symptoms</h6>
+              <div class="mb-3"><% record.symptoms.forEach(s => { %><span class="badge bg-light text-dark border me-1 mb-1"><%= s %></span><% }) %></div>
+            <% } %>
+            <% if (record.diagnosis && record.diagnosis.length > 0) { %>
+              <h6 class="fw-bold">Diagnosis</h6>
+              <div class="mb-3"><% record.diagnosis.forEach(d => { %><span class="badge bg-info text-white me-1 mb-1"><%= d %></span><% }) %></div>
+            <% } %>
+            <% if (record.doctorNotes) { %>
+              <h6 class="fw-bold">Doctor's Notes</h6>
+              <div class="doctor-notes-box p-3 rounded bg-light"><%= record.doctorNotes %></div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Prescription -->
+        <% if (record.prescription && record.prescription.length > 0) { %>
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-pills me-2 text-teal"></i>Prescription</h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table mb-0">
+                <thead class="table-light">
+                  <tr><th>Medicine</th><th>Dosage</th><th>Duration</th><th>Instructions</th></tr>
+                </thead>
+                <tbody>
+                  <% record.prescription.forEach(p => { %>
+                    <tr>
+                      <td class="fw-semibold"><%= p.medicine %></td>
+                      <td><%= p.dosage %></td>
+                      <td><%= p.duration %></td>
+                      <td><%= p.instructions %></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>

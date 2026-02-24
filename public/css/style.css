@@ -1,0 +1,285 @@
+/* --- 1. GLOBAL VARIABLES & RESET --- */
+:root {
+  --teal: #028090;
+  --teal-dark: #01606d;
+  --teal-light: #e0f5f8;
+  --accent-green: #02c39a;
+  --bg-light: #f4f7f9;
+  --text-main: #334155;
+  --text-muted: #64748b;
+  --glass-white: rgba(255, 255, 255, 0.75);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+  --shadow-md: 0 15px 40px rgba(2, 128, 144, 0.12);
+  --transition: all 0.3s ease;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-light);
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+.main-content {
+  flex: 1 0 auto;
+}
+
+/* --- 2. NAVBAR (GLASS EFFECT) --- */
+.cc-navbar {
+  background: rgba(2, 128, 144, 0.75);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.cc-navbar .nav-link {
+  color: rgba(255,255,255,0.85) !important;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.cc-navbar .nav-link:hover {
+  color: #fff !important;
+  transform: translateY(-2px);
+}
+
+/* --- 3. HERO SECTION --- */
+.hero-section {
+  min-height: 85vh;
+  background:
+    radial-gradient(at 0% 0%, rgba(2, 195, 154, 0.2), transparent 50%),
+    radial-gradient(at 100% 0%, rgba(2, 128, 144, 0.2), transparent 50%),
+    linear-gradient(135deg, #01404a, #028090);
+  position: relative;
+  overflow: hidden;
+  padding: 80px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  right: -5%;
+  width: 500px;
+  height: 500px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 40% 60% 70% 30%;
+  animation: morph 15s linear infinite;
+}
+
+@keyframes morph {
+  0%, 100% { border-radius: 40% 60% 70% 30%; }
+  50% { border-radius: 60% 40% 30% 70%; }
+}
+
+.hero-section h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.hero-section p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  max-width: 700px;
+  margin: 10px auto;
+}
+
+.hero-buttons {
+  margin-top: 30px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Floating Icon */
+.hero-icon {
+  font-size: 5rem;
+  background: rgba(255,255,255,0.08);
+  padding: 20px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  50% { transform: translateY(-15px); }
+}
+
+/* --- 4. BUTTONS (UPGRADED) --- */
+.btn {
+  font-weight: 600;
+  border-radius: 14px;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Primary */
+.btn-teal {
+  background: linear-gradient(135deg, var(--teal), var(--accent-green));
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  font-size: 1.05rem;
+  box-shadow: 0 6px 20px rgba(2,128,144,0.25);
+}
+
+.btn-teal:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(2,128,144,0.35);
+}
+
+/* Outline */
+.btn-outline-teal {
+  border: 2px solid rgba(255,255,255,0.6);
+  color: white;
+  padding: 14px 30px;
+  font-size: 1.05rem;
+  background: transparent;
+  backdrop-filter: blur(6px);
+}
+
+.btn-outline-teal:hover {
+  background: white;
+  color: var(--teal);
+  transform: translateY(-3px);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* --- 5. CARDS & TABLES --- */
+.feature-card {
+  background: var(--glass-white);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 2rem;
+  transition: var(--transition);
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-md);
+}
+
+.feature-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: var(--teal-light);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  transition: var(--transition);
+}
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.table-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  padding: 1rem;
+}
+
+.table thead th {
+  background-color: #f8fafc;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  padding: 1.25rem;
+}
+
+.table tbody td {
+  padding: 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.badge-verified {
+  background-color: #ecfdf5;
+  color: #059669;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+/* --- 6. STATS --- */
+.stat-card {
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-number {
+  font-size: 2.4rem;
+  font-weight: 800;
+}
+
+/* --- 7. FOOTER --- */
+.cc-footer {
+  flex-shrink: 0;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.footer-credits {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+/* --- 8. RESPONSIVE --- */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 70vh;
+    padding: 40px 16px;
+  }
+
+  .hero-section h1 {
+    font-size: 2.2rem;
+  }
+
+  .btn-teal,
+  .btn-outline-teal {
+    width: 100%;
+    padding: 14px;
+  }
+
+  .hero-icon {
+    font-size: 3.5rem;
+  }
+
+  .stat-number {
+    font-size: 1.8rem;
+  }
+}
