@@ -24,8 +24,8 @@ const seed = async () => {
   // Create Admin
   const adminUser = await User.create({ name: 'Admin CareConnect', email: 'admin@careconnect.in', password: await hash('admin123'), role: 'admin' });
 
-  // Create Doctors
-  const drRohanUser = await User.create({ name: 'Rohan Malik', email: 'drrohan@careconnect.in', password: await hash('doctor123'), role: 'doctor' });
+  // Create Ddrrohan@careconnect.inoctors
+  const drRohanUser = await User.create({ name: 'Rohan Malik', email: '', password: await hash('doctor123'), role: 'doctor' });
   const drManviUser = await User.create({ name: 'Manvi punia', email: 'drmanvi@careconnect.in', password: await hash('doctor123'), role: 'doctor' });
 
   const drRohan = await Doctor.create({ user: drRohanUser._id, registrationNumber: 'MH/2020/45678', specialization: 'Cardiologist', hospital: 'AIIMS Delhi', district: 'South Delhi', state: 'Delhi', experience: 8, verified: true });
