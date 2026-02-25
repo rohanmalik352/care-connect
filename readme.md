@@ -1,6 +1,19 @@
 # 🏥 CareConnect
+> ⚡ India's unified health platform — secure patient records + doctor collaboration, built with Node.js, Express & MongoDB.
+
 **Unified Patient Records & Doctor Collaboration Platform**  
 *Built by Team Parallax*
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/team-parallax/careconnect/blob/main/LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-brightgreen)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-4.x-blue)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-6.x-green)](https://mongodb.com/)
+[![EJS](https://img.shields.io/badge/Template-EJS-orange)](https://ejs.co/)
+[![Render](https://img.shields.io/badge/Hosted%20on-Render-46E3B7)](https://careconnect.onrender.com)
+
+🌐 **Live Demo:** [https://careconnect.onrender.com](https://careconnect.onrender.com)  
+📁 **Repository:** [https://github.com/team-parallax/careconnect](https://github.com/team-parallax/careconnect)  
+📄 **License:** [MIT](https://github.com/team-parallax/careconnect/blob/main/LICENSE)
 
 ---
 
@@ -29,12 +42,18 @@ npm install
 
 ## 🚀 Setup & Run
 
-### 1. Install Node.js dependencies
+### 1. Clone the repository
+```bash
+git clone https://github.com/team-parallax/careconnect.git
+cd careconnect
+```
+
+### 2. Install Node.js dependencies
 ```bash
 npm install
 ```
 
-### 2. Configure environment
+### 3. Configure environment
 Edit `.env` file:
 ```env
 PORT=3000
@@ -42,7 +61,7 @@ MONGO_URI=mongodb://localhost:27017/careconnect
 SESSION_SECRET=your_secret_key_here
 ```
 
-### 3. Make sure MongoDB is running
+### 4. Make sure MongoDB is running
 ```bash
 # macOS/Linux
 mongod
@@ -51,12 +70,12 @@ mongod
 net start MongoDB
 ```
 
-### 4. Seed demo data (optional but recommended)
+### 5. Seed demo data (optional but recommended)
 ```bash
 npm run seed
 ```
 
-### 5. Start the server
+### 6. Start the server
 ```bash
 # Development (auto-restart)
 npm run dev
@@ -154,3 +173,23 @@ careconnect/
 | Doctor forum | | ✅ | |
 | Verify doctors | | | ✅ |
 | View all users | | | ✅ |
+
+---
+
+## 👥 Team Parallax
+
+| Name | Role |
+|---|---|
+| Rohan Malik | Team Leader |
+| Manvi | Developer |
+| Khyati Mourya | Developer |
+| Naman Chaudhary | Developer |
+| Aditya Chandra | Data Analyst |
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](https://github.com/team-parallax/careconnect/blob/main/LICENSE) file for full details.
+
+Copyright (c) 2024 Team Parallax
